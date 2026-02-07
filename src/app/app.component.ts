@@ -30,11 +30,12 @@ import { Page } from './models/page';
 })
 export class AppComponent {
   public appPages = [
-    new Page('Home', '/folder/home', 'home'),
-    new Page('Presupuesto', '/folder/budget', 'pie-chart-outline'),
-    new Page('Reportes', '/folder/news', 'newspaper-outline'),
-    new Page('Ajustes', '/folder/settings', 'cog-outline'),
-    new Page('Dashboard', '/folder/dashboard', 'analytics-outline'),
+    new Page('Dashboard','dashboard', 'analytics-outline'),
+    new Page('Categorias','categoria', 'analytics-outline'),
+    new Page('Presupuesto','presupuesto', 'pie-chart-outline'),
+    new Page('Reportes', 'reporte', 'newspaper-outline'),
+    new Page('Ajustes', 'ajustes', 'cog-outline'),
+ 
 
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
