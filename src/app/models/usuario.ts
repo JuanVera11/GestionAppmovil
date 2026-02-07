@@ -28,7 +28,6 @@ export class Usuario {
         this.id = id;
     }
 
-    // Getter y Setter de nombre
     get Nombre(): string {
         return this.nombre;
     }
