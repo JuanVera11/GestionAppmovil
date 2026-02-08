@@ -1,54 +1,89 @@
 .login-content {
     --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
+  .login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 20px;
+  }
+
 
 .login-card {
-    padding: 40px 24px;
-    margin: 80px auto;
-    max-width: 400px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 24px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
 
-.login-card h1 {
-    margin-bottom: 32px;
-    font-size: 28px;
-    font-weight: 700;
-    color: #1f2937;
+  h1 {
+    margin-top: 0;
+    margin-bottom: 35px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #2c3e50;
+  }
 }
 
 .form-group {
-    --padding-start: 0;
-    margin-bottom: 24px;
-    width: 100%;
-}
+  text-align: left;
+  margin-bottom: 20px;
 
-.form-group ion-label {
+  ion-label {
+    display: block;
+    margin-bottom: 8px;
+    margin-left: 5px;
     font-size: 14px;
-    color: #6b7280;
-}
+    color: #444;
+    font-weight: 600;
+  }
 
-.form-group ion-input {
-    --border-radius: 12px;
-    --background: #f9fafb;
+  .custom-input {
+    --background: #f4f5f7;
+    --color: #333;
+    --placeholder-color: #999;
+    --padding-start: 15px;
+    --padding-end: 15px;
+    border-radius: 12px;
+    height: 50px;
+    font-size: 16px;
+    border: 1px solid #e0e0e0; // Evita el efecto de bloque negro
+  }
 }
 
 .btn-primary {
-    --border-radius: 12px;
-    height: 48px;
-    margin-top: 16px;
-    --background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    --color: white;
-    font-weight: 600;
+  margin-top: 30px;
+  --background: #2563eb;
+  --background-activated: #1d4ed8;
+  --border-radius: 12px;
+  height: 55px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.forgot-password,
-.register-link {
-    margin-top: 16px;
-}
-
-.forgot-password a {
+.links-container {
+  margin-top: 25px;
+  
+  .forgot-password {
+    text-decoration: none;
     color: #2563eb;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .register-link {
+    font-size: 14px;
+    color: #666;
+    
+    span {
+      color: #2563eb;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
 }

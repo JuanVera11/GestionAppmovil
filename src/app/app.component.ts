@@ -1,27 +1,20 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { 
-  IonApp, 
-  IonSplitPane, 
-  IonMenu, 
-  IonContent, 
-  IonList, 
-  IonMenuToggle, 
-  IonItem, 
-  IonIcon, 
-  IonLabel, 
-  IonRouterOutlet, 
-  IonRouterLink,
-  IonAvatar 
+  IonApp, IonSplitPane, IonMenu, IonContent, IonList, 
+  IonMenuToggle, IonItem, IonIcon, IonLabel, 
+  IonRouterOutlet, IonRouterLink, IonAvatar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
+
 import { 
   pieChartOutline, 
   cogOutline, 
   analyticsOutline, 
   newspaperOutline, 
   gridOutline, 
-  pricetagsOutline 
+  pricetagsOutline,
+  logInOutline 
 } from 'ionicons/icons';
 import { Page } from './models/page';
 
@@ -31,24 +24,16 @@ import { Page } from './models/page';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterLink,
-    RouterLinkActive,
-    IonApp,
-    IonSplitPane,
-    IonMenu,
-    IonContent,
-    IonList,
-    IonMenuToggle,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    IonRouterLink,
-    IonRouterOutlet,
-    IonAvatar 
+    RouterLink, RouterLinkActive, IonApp, IonSplitPane, 
+    IonMenu, IonContent, IonList, IonMenuToggle, 
+    IonItem, IonIcon, IonLabel, IonRouterLink, 
+    IonRouterOutlet, IonAvatar 
   ],
 })
 export class AppComponent {
   public appPages = [
+
+    new Page('Login','/login', 'log-in-outline'), 
     new Page('Dashboard', 'dashboard', 'grid-outline'),
     new Page('Categorías', 'categoria', 'pricetags-outline'),
     new Page('Presupuesto', 'presupuesto', 'pie-chart-outline'),
@@ -58,6 +43,7 @@ export class AppComponent {
 
   constructor() {
     addIcons({ 
+      'log-in-outline': logInOutline,
       'grid-outline': gridOutline,
       'pricetags-outline': pricetagsOutline,
       'pie-chart-outline': pieChartOutline, 
