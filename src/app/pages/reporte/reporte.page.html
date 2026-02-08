@@ -1,13 +1,96 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>reporte</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="main-container">
+    <header class="custom-header">
+      <div class="left-section">
+        <div class="icon-box">
+          <ion-icon name="pie-chart"></ion-icon>
+        </div>
+        <h1 class="header-title">Reportes financieros</h1>
+      </div>
+      <ion-icon name="funnel-outline" class="filter-icon"></ion-icon>
+    </header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">reporte</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <div class="balance-card">
+      <div class="balance-info">
+        <span class="balance-label">Presupuesto Mensual</span>
+        <h2 class="balance-amount">{{ presupuestoTotal | currency:'$':'symbol':'1.0-0' }}</h2>
+      </div>
+      <div class="balance-stats">
+        <div class="stat-item">
+          <ion-icon name="cash-outline" class="spent-icon"></ion-icon>
+          <div class="stat-texts">
+            <small>Gastado</small>
+            <span>{{ totalGastado | currency:'$':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <ion-icon name="wallet-outline" class="remain-icon"></ion-icon>
+          <div class="stat-texts">
+            <small>Disponible</small>
+            <span>{{ saldoRestante | currency:'$':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-chips">
+      <button class="chip" [class.active]="filtroSeleccionado === '7dias'" (click)="cambiarFiltro('7dias')">7 días</button>
+      <button class="chip" [class.active]="filtroSeleccionado === 'mes'" (click)="cambiarFiltro('mes')">Este mes</button>
+      <button class="chip" [class.active]="filtroSeleccionado === 'personalizado'" (click)="cambiarFiltro('personalizado')">Personalizado</button>
+    </div>
+
+    <div class="select-box-container">
+      <ion-item lines="none" class="custom-select">
+        <ion-select 
+          label="Filtrar por categoría" 
+          label-placement="stacked" 
+          placeholder="Selecciona una"
+          okText= "Aceptar"
+          cancelText="Cancelar"
+          (ionChange)="onCategoriaChange($event)">
+          <ion-select-option value="comida">Comida</ion-select-option>
+          <ion-select-option value="transporte">Transporte</ion-select-option>
+          <ion-select-option value="educacion">Educación</ion-select-option>
+          <ion-select-option value="ropa">Ropa</ion-select-option>
+          <ion-select-option value="viajes">Viajes</ion-select-option>
+          <ion-select-option value="gastos hormiga">Gastos Hormiga</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+
+    <div class="card">
+      <h2 class="card-title">Gastos por Categoría</h2>
+      <div class="chart-container">
+        <div class="y-labels">
+          <span>$1.5M</span><span>$1.1M</span><span>$750k</span><span>$375k</span><span>$0</span>
+        </div>
+        <div class="bars-area">
+          <div class="grid-lines">
+            <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+          </div>
+          <div class="bars">
+            <div class="bar-group" *ngFor="let dato of datosActuales">
+              <span class="bar-pct-label">
+              {{ dato.valor >= 1000000 ? '$' + (dato.valor/1000000 | number:'1.1-1') + 'M' : '$' + (dato.valor/1000 | number:'1.0-0') + 'k' }}
+              </span>
+              <div class="bar" [style.height.%]="calcularAlturaBarra(dato.valor)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="x-labels">
+        <span *ngFor="let cat of categoriasGestionApp">{{cat}}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Uso del Presupuesto</h2>
+      <p class="card-subtitle">Porcentaje consumido del sueldo total.</p>
+      <div class="donut-container">
+        <div class="donut-chart" [ngStyle]="donutStyle" [attr.data-pct]="porcentajeGastoTotal + '%'"></div>
+      </div>
+    </div>
+  </div>
 </ion-content>
