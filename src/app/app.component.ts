@@ -12,7 +12,7 @@ import {
   IonLabel, 
   IonRouterOutlet, 
   IonRouterLink,
-  IonAvatar
+  IonAvatar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -44,7 +44,7 @@ import { Page } from './models/page';
     IonLabel,
     IonRouterLink,
     IonRouterOutlet,
-    IonAvatar
+    IonAvatar 
   ],
 })
 export class AppComponent {
@@ -64,7 +64,6 @@ export class AppComponent {
       'newspaper-outline': newspaperOutline,
       'cog-outline': cogOutline, 
       'analytics-outline': analyticsOutline, 
-     
     });
   }
 }
