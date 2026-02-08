@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './page.html',
-  styleUrls: ['./page.scss'],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
 })
