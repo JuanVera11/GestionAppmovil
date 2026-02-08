@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline } from 'ionicons/icons';
+import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline,logInOutline } from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -30,6 +30,7 @@ import { Page } from './models/page';
 })
 export class AppComponent {
   public appPages = [
+    new Page('Login','pages/login', 'log-in-outline'),
     new Page('Home', '/folder/home', 'home'),
     new Page('Presupuesto', '/folder/budget', 'pie-chart-outline'),
     new Page('Reportes', '/folder/news', 'newspaper-outline'),
@@ -38,14 +39,16 @@ export class AppComponent {
 
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  
+
   constructor() {
-    addIcons({ 
-      'home': home, 
-      'pie-chart-outline': pieChartOutline, 
+    addIcons({
+      'home': home,
+      'pie-chart-outline': pieChartOutline,
       'newspaper-outline': newspaperOutline,
-      'cog-outline': cogOutline, 
-      'analytics-outline': analyticsOutline, 
+      'cog-outline': cogOutline,
+      'analytics-outline': analyticsOutline,
+      'log-in-outline': logInOutline,
+
     });
   }
 }

@@ -1,0 +1,54 @@
+.login-content {
+    --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+    padding: 40px 24px;
+    margin: 80px auto;
+    max-width: 400px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-card h1 {
+    margin-bottom: 32px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.form-group {
+    --padding-start: 0;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.form-group ion-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.form-group ion-input {
+    --border-radius: 12px;
+    --background: #f9fafb;
+}
+
+.btn-primary {
+    --border-radius: 12px;
+    height: 48px;
+    margin-top: 16px;
+    --background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    --color: white;
+    font-weight: 600;
+}
+
+.forgot-password,
+.register-link {
+    margin-top: 16px;
+}
+
+.forgot-password a {
+    color: #2563eb;
+}
