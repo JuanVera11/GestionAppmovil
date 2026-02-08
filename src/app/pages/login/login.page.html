@@ -1,25 +1,26 @@
 <ion-content class="login-content">
-  <div class="login-card">
-    <h1>Iniciar sesión</h1>
-    
-    <ion-item lines="none" class="form-group">
-      <ion-label position="stacked">Correo</ion-label>
-      <ion-input type="email" placeholder="ejemplo@correo.com" readonly></ion-input>
-    </ion-item>
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Iniciar sesión</h1>
+      
+      <div class="form-group">
+        <ion-label>Correo</ion-label>
+        <ion-input type="email" placeholder="ejemplo@correo.com" class="custom-input"></ion-input>
+      </div>
 
-    <ion-item lines="none" class="form-group">
-      <ion-label position="stacked">Contraseña</ion-label>
-      <ion-input type="password" placeholder="********" readonly></ion-input>
-    </ion-item>
+      <div class="form-group">
+        <ion-label>Contraseña</ion-label>
+        <ion-input type="password" placeholder="********" class="custom-input"></ion-input>
+      </div>
 
-    <ion-button expand="block" fill="solid" class="btn-primary">Iniciar sesión</ion-button>
+      <ion-button expand="block" class="btn-primary">
+        INICIAR SESIÓN
+      </ion-button>
 
-    <ion-text class="forgot-password">
-      <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-    </ion-text>
-
-    <ion-text class="register-link">
-      <p>¿No tienes cuenta? Crear cuenta</p>
-    </ion-text>
+      <div class="links-container">
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <p class="register-link">¿No tienes cuenta? <span>Crear cuenta</span></p>
+      </div>
+    </div>
   </div>
 </ion-content>

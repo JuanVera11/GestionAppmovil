@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonAvatar, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline,logInOutline } from 'ionicons/icons';
+import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline, logInOutline } from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -18,12 +18,11 @@ import { Page } from './models/page';
     IonMenu,
     IonContent,
     IonList,
-    IonListHeader,
-    IonNote,
     IonMenuToggle,
     IonItem,
     IonIcon,
     IonLabel,
+    IonAvatar,
     IonRouterLink,
     IonRouterOutlet
   ],
@@ -36,8 +35,8 @@ export class AppComponent {
     new Page('Reportes', '/folder/news', 'newspaper-outline'),
     new Page('Ajustes', '/folder/settings', 'cog-outline'),
     new Page('Dashboard', '/folder/dashboard', 'analytics-outline'),
-
   ];
+  
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
   constructor() {
@@ -48,7 +47,6 @@ export class AppComponent {
       'cog-outline': cogOutline,
       'analytics-outline': analyticsOutline,
       'log-in-outline': logInOutline,
-
     });
   }
 }
