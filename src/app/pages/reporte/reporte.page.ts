@@ -73,8 +73,8 @@ import { pieChart, funnelOutline, chevronDownOutline, walletOutline, cashOutline
     ];
   } else if (tipo === 'personalizado') {
     this.datosActuales = [
-      { valor: 500000 }, { valor: 50000 }, { valor: 50000 }, 
-      { valor: 50000 }, { valor: 50000 }, { valor: 50000 }
+      { valor: 500000 }, { valor: 300000 }, { valor: 400000 }, 
+      { valor: 500000 }, { valor: 600000 }, { valor: 200000 }
     ];
   }
 }

@@ -1,8 +1,28 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+import { 
+  IonApp, 
+  IonSplitPane, 
+  IonMenu, 
+  IonContent, 
+  IonList, 
+  IonMenuToggle, 
+  IonItem, 
+  IonIcon, 
+  IonLabel, 
+  IonRouterOutlet, 
+  IonRouterLink,
+  IonAvatar // <-- Importante para el nuevo diseño
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline } from 'ionicons/icons';
+import { 
+  pieChartOutline, 
+  cogOutline, 
+  analyticsOutline, 
+  newspaperOutline, 
+  gridOutline, 
+  pricetagsOutline 
+} from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -18,31 +38,28 @@ import { Page } from './models/page';
     IonMenu,
     IonContent,
     IonList,
-    IonListHeader,
-    IonNote,
     IonMenuToggle,
     IonItem,
     IonIcon,
     IonLabel,
     IonRouterLink,
-    IonRouterOutlet
+    IonRouterOutlet,
+    IonAvatar // <-- Agregado a los imports del componente
   ],
 })
 export class AppComponent {
   public appPages = [
-    new Page('Dashboard','dashboard', 'analytics-outline'),
-    new Page('Categorias','categoria', 'analytics-outline'),
-    new Page('Presupuesto','presupuesto', 'pie-chart-outline'),
+    new Page('Dashboard', 'dashboard', 'grid-outline'),
+    new Page('Categorías', 'categoria', 'pricetags-outline'),
+    new Page('Presupuesto', 'presupuesto', 'pie-chart-outline'),
     new Page('Reportes', 'reporte', 'newspaper-outline'),
     new Page('Ajustes', 'ajustes', 'cog-outline'),
- 
-
   ];
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  
+
   constructor() {
     addIcons({ 
-      'home': home, 
+      'grid-outline': gridOutline,
+      'pricetags-outline': pricetagsOutline,
       'pie-chart-outline': pieChartOutline, 
       'newspaper-outline': newspaperOutline,
       'cog-outline': cogOutline, 

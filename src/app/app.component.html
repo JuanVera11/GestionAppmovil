@@ -1,15 +1,28 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Aplicacion De Finanzas</ion-list-header>
-          <ion-note>NombreUsuario</ion-note>
+      <ion-content class="ion-padding-top">
+        
+        <div class="menu-header">
+          <ion-avatar>
+            <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="User" />
+          </ion-avatar>
+          <div class="header-text">
+            <ion-label class="user-name">NombreUsuario</ion-label>
+            <p>App de Finanzas</p>
+          </div>
+        </div>
 
+        <ion-list id="inbox-list" lines="none">
           @for (p of appPages; track p; let i = $index) {
             <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon " [md]="p.icon "></ion-icon>
+              <ion-item 
+                routerDirection="root" 
+                [routerLink]="[p.url]" 
+                detail="false" 
+                routerLinkActive="selected"
+                class="menu-item">
+                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
@@ -17,6 +30,7 @@
         </ion-list>
       </ion-content>
     </ion-menu>
+
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>
