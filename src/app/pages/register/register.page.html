@@ -1,0 +1,55 @@
+<ion-content class="register-content">
+  <div class="register-container">
+    <div class="register-card">
+      <ion-img src="assets/logo-app.png" alt="Logo"></ion-img>
+      <h1>Crear Cuenta</h1>
+      
+      <form (ngSubmit)="register()">
+        <div class="form1-group">
+          <ion-label>Nombre Completo</ion-label>
+          <ion-item class="custom-input">
+            <ion-input [(ngModel)]="fullName" type="text" required></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form1-group">
+          <ion-label>Email</ion-label>
+          <ion-item class="custom-input">
+            <ion-input [(ngModel)]="email" type="email" required></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form1-group">
+          <ion-label>Contraseña</ion-label>
+          <ion-item class="custom-input">
+            <ion-input [(ngModel)]="pass" type="password" required></ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form1-group">
+          <ion-label>Tipo Cuenta</ion-label>
+          <ion-item lines="none">
+            <ion-select [(ngModel)]="accountType" interface="popover">
+              <ion-select-option value="Personal">Personal</ion-select-option>
+              <ion-select-option value="Negocio">Negocio</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <ion-item class="checkbox-group" lines="none">
+          <ion-checkbox [(ngModel)]="termsAccepted" slot="start"></ion-checkbox>
+          <ion-label>Acepto términos</ion-label>
+        </ion-item>
+
+        <ion-button expand="block" type="submit" class="btn-primary"
+          [disabled]="!fullName || !email || !pass || !termsAccepted">
+          Registrarse
+        </ion-button>
+      </form>
+
+      <div class="links-container">
+        <a href="" class="forgot-password">Ya tengo Cuenta</a>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -12,6 +12,14 @@ export const routes: Routes = [
       import('./folder/folder.page').then((m) => m.FolderPage),
   },
   {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage)
+  },
+  {
     path: 'categoria',
     loadComponent: () => import('./pages/categoria/categoria.page').then(m => m.CategoriaPage)
   },
@@ -35,9 +43,4 @@ export const routes: Routes = [
     path: 'reporte',
     loadComponent: () => import('./pages/reporte/reporte.page').then(m => m.ReportePage)
   },
-  {
-    path: 'pages/login',
-    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
-  },
-
 ];

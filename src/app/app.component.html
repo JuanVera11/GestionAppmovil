@@ -16,10 +16,10 @@
         <ion-list id="inbox-list" lines="none">
           @for (p of appPages; track p; let i = $index) {
             <ion-menu-toggle auto-hide="false">
-              <ion-item 
-                routerDirection="root" 
-                [routerLink]="[p.url]" 
-                detail="false" 
+              <ion-item
+                routerDirection="root"
+                [routerLink]="[p.url]"
+                detail="false"
                 routerLinkActive="selected"
                 class="menu-item">
                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
