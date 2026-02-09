@@ -1,8 +1,21 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonAvatar, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+import { 
+  IonApp, IonSplitPane, IonMenu, IonContent, IonList, 
+  IonMenuToggle, IonItem, IonIcon, IonLabel, 
+  IonRouterOutlet, IonRouterLink, IonAvatar 
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { home, pieChartOutline, paperPlane, cogOutline, analyticsOutline, trash, newspaperOutline, logInOutline } from 'ionicons/icons';
+
+import { 
+  pieChartOutline, 
+  cogOutline, 
+  analyticsOutline, 
+  newspaperOutline, 
+  gridOutline, 
+  pricetagsOutline,
+  logInOutline 
+} from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -11,42 +24,32 @@ import { Page } from './models/page';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterLink,
-    RouterLinkActive,
-    IonApp,
-    IonSplitPane,
-    IonMenu,
-    IonContent,
-    IonList,
-    IonMenuToggle,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    IonAvatar,
-    IonRouterLink,
-    IonRouterOutlet
+    RouterLink, RouterLinkActive, IonApp, IonSplitPane, 
+    IonMenu, IonContent, IonList, IonMenuToggle, 
+    IonItem, IonIcon, IonLabel, IonRouterLink, 
+    IonRouterOutlet, IonAvatar 
   ],
 })
 export class AppComponent {
   public appPages = [
-    new Page('Login','pages/login', 'log-in-outline'),
-    new Page('Home', '/folder/home', 'home'),
-    new Page('Presupuesto', '/folder/budget', 'pie-chart-outline'),
-    new Page('Reportes', '/folder/news', 'newspaper-outline'),
-    new Page('Ajustes', '/folder/settings', 'cog-outline'),
-    new Page('Dashboard', '/folder/dashboard', 'analytics-outline'),
+
+    new Page('Login','/login', 'log-in-outline'), 
+    new Page('Dashboard', 'dashboard', 'grid-outline'),
+    new Page('Categorías', 'categoria', 'pricetags-outline'),
+    new Page('Presupuesto', 'presupuesto', 'pie-chart-outline'),
+    new Page('Reportes', 'reporte', 'newspaper-outline'),
+    new Page('Ajustes', 'ajustes', 'cog-outline'),
   ];
-  
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
   constructor() {
-    addIcons({
-      'home': home,
-      'pie-chart-outline': pieChartOutline,
-      'newspaper-outline': newspaperOutline,
-      'cog-outline': cogOutline,
-      'analytics-outline': analyticsOutline,
+    addIcons({ 
       'log-in-outline': logInOutline,
+      'grid-outline': gridOutline,
+      'pricetags-outline': pricetagsOutline,
+      'pie-chart-outline': pieChartOutline, 
+      'newspaper-outline': newspaperOutline,
+      'cog-outline': cogOutline, 
+      'analytics-outline': analyticsOutline, 
     });
   }
 }
