@@ -2,7 +2,7 @@
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content class="ion-padding-top">
-        
+
         <div class="menu-header">
           <ion-avatar>
             <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="User" />
@@ -15,17 +15,13 @@
 
         <ion-list id="inbox-list" lines="none">
           @for (p of appPages; track p; let i = $index) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item
-                routerDirection="root"
-                [routerLink]="[p.url]"
-                detail="false"
-                routerLinkActive="selected"
-                class="menu-item">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="p.url" (click)="onPageClick(p.url)" detail="false"
+              routerLinkActive="selected" class="menu-item">
+              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
           }
         </ion-list>
       </ion-content>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import {
   IonApp, IonSplitPane, IonMenu, IonContent, IonList,
   IonMenuToggle, IonItem, IonIcon, IonLabel,
@@ -24,7 +24,7 @@ import { Page } from './models/page';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterLink, RouterLinkActive, IonApp, IonSplitPane,
+    RouterModule, RouterLink, RouterLinkActive, IonApp, IonSplitPane,
     IonMenu, IonContent, IonList, IonMenuToggle,
     IonItem, IonIcon, IonLabel, IonRouterLink,
     IonRouterOutlet, IonAvatar
@@ -32,8 +32,8 @@ import { Page } from './models/page';
 })
 export class AppComponent {
   public appPages = [
-    new Page('Login','pages/login', 'log-in-outline'),
-    new Page('Register','pages/register', 'person-add-outline'),
+    new Page('Login','/login', 'log-in-outline'),
+    new Page('Register','/register', 'person-add-outline'),
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
@@ -55,6 +55,6 @@ export class AppComponent {
   }
 
   onPageClick(url: string) {
-    window.location.href = `http://localhost:8100${url}`;
+    window.location.href = url;
   }
 }

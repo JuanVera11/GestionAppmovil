@@ -3,13 +3,8 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'folder/inbox',
+    redirectTo: 'login',
     pathMatch: 'full',
-  },
-  {
-    path: 'folder/:id',
-    loadComponent: () =>
-      import('./folder/folder.page').then((m) => m.FolderPage),
   },
   {
     path: 'login',
@@ -19,6 +14,7 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage)
   },
+
   {
     path: 'categoria',
     loadComponent: () => import('./pages/categoria/categoria.page').then(m => m.CategoriaPage)
