@@ -1,24 +1,52 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Categoria</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-title class="main-title">Mis Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirFormulario()">
+        <ion-icon name="add" size="large" color="dark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">categoria</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+<ion-content [fullscreen]="true" class="white-bg">
+  <ion-list lines="full" class="ion-no-padding">
+    <ion-item-sliding *ngFor="let cat of categorias">
+      <ion-item (click)="abrirFormulario(cat)" class="category-item">
+        
+        <div slot="start" class="icon-circle">
+          <ion-icon [name]="cat.icono"></ion-icon>
+        </div>
 
-<ion-content class="ion-padding">
-  <h1>Heading 1</h1>
-  <h2>Heading 2</h2>
-  <h3>Heading 3</h3>
-  <h4>Heading 4</h4>
-  <h5>Heading 5</h5>
-  <h6>Heading 6</h6>
+        <ion-label>
+          <div class="row-header">
+            <h2 class="cat-name">{{ cat.nombre }}</h2>
+            <div class="bar-container">
+              <ion-progress-bar 
+                [color]="getColor(cat)" 
+                [value]="getProgreso(cat)">
+              </ion-progress-bar>
+            </div>
+          </div>
+          <p class="cat-info">
+            ${{ formatMoney(cat.asignado) }} Asignado • ${{ formatMoney(cat.gastado) }} Gastado
+          </p>
+        </ion-label>
 
-  <p>Here's a small text description for the content. Nothing more, nothing less.</p>
+        <ion-icon name="chevron-forward-outline" slot="end" size="small" color="medium"></ion-icon>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="eliminar(cat.id)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="custom-fab" (click)="abrirFormulario()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

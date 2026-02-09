@@ -38,7 +38,7 @@ export class AppComponent {
     new Page('Categorías', '/categoria', 'pricetags-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
     new Page('Reportes', '/reporte', 'newspaper-outline'),
-    new Page('Ajustes', '/ajustes', 'cog-outline'),
+    new Page('Configuracion', '/configuracion', 'cog-outline'),
   ];
 
   constructor() {
