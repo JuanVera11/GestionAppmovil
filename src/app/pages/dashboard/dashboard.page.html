@@ -1,0 +1,49 @@
+<ion-content class="dashboard-content">
+  <div class="header">
+    <ion-item lines="none" class="saldo-card">
+      <ion-icon name="wallet-outline" slot="start"></ion-icon>
+      <div>
+        <p>Saldo Actual</p>
+        <h2>{{ saldoActual }}</h2>
+      </div>
+    </ion-item>
+  </div>
+
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col size="6" *ngFor="let card of cards">
+        <ion-card class="stat-card glass-card" [color]="card.color">
+          <ion-card-content>
+            <ion-icon [name]="card.icon" class="stat-icon"></ion-icon>
+            <p>{{ card.title }}</p>
+            <h3>{{ card.value }}</h3>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card class="progreso-card glass-card">
+    <ion-card-header>
+      <ion-card-title>Progreso Presupuesto</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-progress-bar [value]="progresoPresupuesto / 100"></ion-progress-bar>
+      <p>{{ progresoPresupuesto }}% del presupuesto mensual</p>
+    </ion-card-content>
+  </ion-card>
+
+  <section class="rapido-section">
+    <h3>Acceso Rápido</h3>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" *ngFor="let item of rapidoAccess">
+          <ion-card class="action-card glass-card" button [routerLink]="item.route">
+            <ion-icon [name]="item.icon" class="action-icon"></ion-icon>
+            <p>{{ item.title }}</p>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+</ion-content>
