@@ -7,7 +7,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  createOutline, imageOutline, notificationsOutline, 
+  createOutline, imageOutline, notificationsOutline, colorPaletteOutline,
   sunnyOutline, logOutOutline, cameraOutline, chevronForwardOutline 
 } from 'ionicons/icons';
 
@@ -23,52 +23,86 @@ import {
   ]
 })
 export class ConfiguracionPage {
+  userName: string = 'Usuario GestionApp';
+  userEmail: string = 'usuario@GestionApp.com';
   profileImage: string = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&h=150&auto=format&fit=crop';
+  isDark: boolean = false;
 
   constructor(private alertController: AlertController) {
     addIcons({ 
-      createOutline, imageOutline, notificationsOutline, 
+      createOutline, imageOutline, notificationsOutline, colorPaletteOutline,
       sunnyOutline, logOutOutline, cameraOutline, chevronForwardOutline 
     });
+  }
+
+  // EDITAR PERFIL  
+  async editProfile() {
+    const alert = await this.alertController.create({
+      header: 'Editar Perfil',
+      cssClass: 'dark-alert', 
+      inputs: [
+        { name: 'nuevoNombre', type: 'text', placeholder: 'Nombre', value: this.userName },
+        { name: 'nuevoEmail', type: 'email', placeholder: 'Correo', value: this.userEmail }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        { 
+          text: 'Guardar', 
+          handler: (data: { nuevoNombre: string, nuevoEmail: string }) => {
+            if (data.nuevoNombre) this.userName = data.nuevoNombre;
+            if (data.nuevoEmail) this.userEmail = data.nuevoEmail;
+          } 
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  //  CERRAR SESIÓN  
+  async logout() {
+    const alert = await this.alertController.create({
+      header: '¿Cerrar sesión?',
+      message: '¿Estás seguro de que deseas salir?',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'No, volver', role: 'cancel' },
+        { 
+          text: 'Cerrar Sesión', 
+          role: 'destructive',
+          handler: () => {
+            console.log('Cerrando sesión...');
+    
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // --- MODO COLOR (ESPECIAL) ---
+  toggleTheme(event: any) {
+    this.isDark = event.detail.checked;
+    if (this.isDark) {
+      document.body.classList.add('special-mode');
+    } else {
+      document.body.classList.remove('special-mode');
+    }
+  }
+
+  // --- Imagen de Usuario ---
+  triggerFileInput() {
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    if (fileInput) fileInput.click();
   }
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => { this.profileImage = e.target.result; };
+      reader.onload = (e: any) => { 
+        this.profileImage = e.target.result as string; 
+      };
       reader.readAsDataURL(file);
     }
-  }
-
-  async editarDatos() {
-    const alert = await this.alertController.create({
-      header: 'Editar Perfil',
-      inputs: [
-        { name: 'nombre', type: 'text', placeholder: 'Nombre de usuario' },
-        { name: 'email', type: 'email', placeholder: 'Correo electrónico' }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        { text: 'Guardar', handler: (data) => { console.log('Datos guardados:', data); } }
-      ]
-    });
-    await alert.present();
-  }
-
-  toggleTheme(event: any) {
-    document.body.classList.toggle('dark', event.detail.checked);
-  }
-
-  async logout() {
-    const alert = await this.alertController.create({
-      header: 'Cerrar Sesión',
-      message: '¿Estás seguro que deseas volver al menú principal?',
-      buttons: [
-        { text: 'No', role: 'cancel' },
-        { text: 'Sí, Salir', handler: () => { console.log('Saliendo...'); } }
-      ]
-    });
-    await alert.present();
   }
 }
