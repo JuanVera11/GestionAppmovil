@@ -15,7 +15,7 @@ import {
   pricetagsOutline,
   logInOutline,
   personAddOutline
-} from 'ionicons/icons';
+} from 'ionicons/icons'; 
 import { Page } from './models/page';
 
 @Component({
@@ -24,24 +24,36 @@ import { Page } from './models/page';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterModule, RouterLink, RouterLinkActive, IonApp, IonSplitPane,
-    IonMenu, IonContent, IonList, IonMenuToggle,
-    IonItem, IonIcon, IonLabel, IonRouterLink,
-    IonRouterOutlet, IonAvatar
+    RouterModule, 
+    RouterLink, 
+    RouterLinkActive, 
+    IonApp, 
+    IonSplitPane,
+    IonMenu, 
+    IonContent, 
+    IonList, 
+    IonMenuToggle,
+    IonItem, 
+    IonIcon, 
+    IonLabel, 
+    IonRouterLink,
+    IonRouterOutlet, 
+    IonAvatar
   ],
 })
 export class AppComponent {
   public appPages = [
-    new Page('Login','/login', 'log-in-outline'),
-    new Page('Register','/register', 'person-add-outline'),
+    new Page('Login', '/login', 'log-in-outline'),
+    new Page('Register', '/register', 'person-add-outline'),
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
     new Page('Reportes', '/reporte', 'newspaper-outline'),
-    new Page('Configuracion', '/configuracion', 'cog-outline'),
+    new Page('Configuración', '/configuracion', 'cog-outline'),
   ];
 
   constructor() {
+  
     addIcons({
       'log-in-outline': logInOutline,
       'person-add-outline': personAddOutline,

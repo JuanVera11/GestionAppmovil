@@ -11,10 +11,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },
   {
+    path: 'folder/:id',
+    loadComponent: () => import('./folder/folder.page').then((m) => m.FolderPage),
+  },
+  {
     path: 'register',
     loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage)
   },
-
   {
     path: 'categoria',
     loadComponent: () => import('./pages/categoria/categoria.page').then(m => m.CategoriaPage)
@@ -44,8 +47,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard.page').then( m => m.DashboardPage)
   },
   {
-  path: 'configuracion',
-  loadComponent: () => import('./pages/configuracion/configuracion.page').then(m => m.ConfiguracionPage)
+    path: 'configuracion',
+    loadComponent: () => import('./pages/configuracion/configuracion.page').then(m => m.ConfiguracionPage)
   }
-
 ];
