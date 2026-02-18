@@ -16,7 +16,23 @@ import {
 } from '@capacitor-community/sqlite';
 
 // Define los tipos de valor permitidos al enviar parámetros SQL.
-type SqlValue = string | number | null;
+ type SqlValue = string | number | null;
+
+export interface CategoriaRecord{
+  id: number;
+  nombre:string;
+  valorAsginrado:number;
+  valorGasto:number;
+}
+
+export interface UsuarioRecord{
+  id: number;
+  nombre:string;
+  apellido:string;
+  contraseña:string
+}
+
+ 
 
 
 @Injectable({
