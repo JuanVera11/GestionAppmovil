@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Capacitor } from '@capacitor/core';
+
 import {
   // Objeto principal del plugin SQLite de Capacitor.
   CapacitorSQLite,
@@ -16,6 +17,7 @@ import {
 
 // Define los tipos de valor permitidos al enviar parámetros SQL.
 type SqlValue = string | number | null;
+
 
 @Injectable({
   providedIn: 'root',
