@@ -32,8 +32,29 @@ export interface UsuarioRecord{
   contraseña:string
 }
 
- 
+export interface TransaccionRecord{
+  id:number;
+  monto:number;
+  tipo: 'ingreso'| 'gasto';
+  categoria: string;
+  fecha: string;
+  descripcion:string;
+  idUsuario:number;
+}
 
+export interface PresupuestoRecord{
+  id:number;
+  monto: number;
+  ingreso: number;
+  gasto: number;
+  mes: string;
+  ano: number;
+  estado: string;
+  idUsuarioFk: number;
+}
+
+
+  
 
 @Injectable({
   providedIn: 'root',
