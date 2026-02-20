@@ -23,6 +23,7 @@ import {
   ]
 })
 export class ConfiguracionPage {
+  // iNFORMACIÓN DEL MOMENTO DEL USUARIO 
   userName: string = 'Usuario GestionApp';
   userEmail: string = 'usuario@GestionApp.com';
   profileImage: string = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&h=150&auto=format&fit=crop';
@@ -35,22 +36,38 @@ export class ConfiguracionPage {
     });
   }
 
-  // EDITAR PERFIL  
+  // EDITAR INFORMACIÓN USUARIO
   async editProfile() {
     const alert = await this.alertController.create({
       header: 'Editar Perfil',
       cssClass: 'dark-alert', 
       inputs: [
-        { name: 'nuevoNombre', type: 'text', placeholder: 'Nombre', value: this.userName },
-        { name: 'nuevoEmail', type: 'email', placeholder: 'Correo', value: this.userEmail }
+        {
+          name: 'nuevoNombre', 
+          type: 'text',
+          placeholder: 'Nombre',
+          value: this.userName 
+        },
+        {
+          name: 'nuevoEmail',
+          type: 'email',
+          placeholder: 'Correo',
+          value: this.userEmail
+        }
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { 
           text: 'Guardar', 
-          handler: (data: { nuevoNombre: string, nuevoEmail: string }) => {
-            if (data.nuevoNombre) this.userName = data.nuevoNombre;
-            if (data.nuevoEmail) this.userEmail = data.nuevoEmail;
+          handler: (data) => {
+            // Actualizamos las variables con lo que el usuario escribió, 
+            // El TRIM es para no permitir espacios al principio y final de la cadena de texto
+            if (data.nuevoNombre && data.nuevoNombre.trim() !== '') {
+              this.userName = data.nuevoNombre;
+            }
+            if (data.nuevoEmail && data.nuevoEmail.trim() !== '') {
+              this.userEmail = data.nuevoEmail;
+            }
           } 
         }
       ]
@@ -58,28 +75,7 @@ export class ConfiguracionPage {
     await alert.present();
   }
 
-  //  CERRAR SESIÓN  
-  async logout() {
-    const alert = await this.alertController.create({
-      header: '¿Cerrar sesión?',
-      message: '¿Estás seguro de que deseas salir?',
-      cssClass: 'dark-alert',
-      buttons: [
-        { text: 'No, volver', role: 'cancel' },
-        { 
-          text: 'Cerrar Sesión', 
-          role: 'destructive',
-          handler: () => {
-            console.log('Cerrando sesión...');
-    
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  // --- MODO COLOR (ESPECIAL) ---
+  // GESTIÓN DE TEMA,  EL MODO COLOR ESPECIAL
   toggleTheme(event: any) {
     this.isDark = event.detail.checked;
     if (this.isDark) {
@@ -89,7 +85,7 @@ export class ConfiguracionPage {
     }
   }
 
-  // --- Imagen de Usuario ---
+  // IMAGEN DE USUARIO  
   triggerFileInput() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
     if (fileInput) fileInput.click();
@@ -104,5 +100,22 @@ export class ConfiguracionPage {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  //  CERRAR SESIÓN DE USUARIO
+  async logout() {
+    const alert = await this.alertController.create({
+      header: '¿Cerrar sesión?',
+      message: '¿Estás seguro de que deseas salir?',
+      buttons: [
+        { text: 'No, volver', role: 'cancel' },
+        { 
+          text: 'Cerrar Sesión', 
+          role: 'destructive',
+          handler: () => { console.log('Sesión cerrada'); }
+        }
+      ]
+    });
+    await alert.present();
   }
 }
