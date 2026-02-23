@@ -24,9 +24,9 @@ export class DashboardPage {
   ];
 
   rapidoAccess = [
-    { icon: 'add-circle', title: 'Nueva Transacción', route: '/pages/transaccion' },
-    { icon: 'stats-chart', title: 'Reportes', route: '/pages/reporte' },
-    { icon: 'card', title: 'Presupuestos', route: '/pages/presupuesto' },
-    { icon: 'grid', title: 'Categorías', route: '/pages/categoria' }
+  { icon: 'add-circle', title: 'Nueva Transacción', route: '/transaccion' },
+  { icon: 'stats-chart', title: 'Reportes', route: '/reporte' },
+  { icon: 'card', title: 'Presupuestos', route: '/presupuesto' },
+  { icon: 'grid', title: 'Categorías', route: '/categoria' }
   ];
 }
