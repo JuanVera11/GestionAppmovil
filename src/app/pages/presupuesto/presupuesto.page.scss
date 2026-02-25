@@ -1,0 +1,44 @@
+.bg-white {
+  --background: #ffffff;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #000;
+}
+
+.main-title {
+  padding: 10px 16px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.budget-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+  border: 1px solid #f0f0f0; 
+  margin: 4px;
+
+  .price-box {
+    margin: 8px 0;
+    .spent-amount { font-size: 1.2rem; font-weight: 700; }
+    .total-amount { color: #888; font-size: 0.8rem; }
+  }
+}
+
+.transactions-section {
+  background: #ffffff;
+  margin-top: 10px;
+}
+
+.icon-circle {
+  background: #f7f7f7;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

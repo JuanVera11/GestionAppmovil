@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, RouterModule],
 })
 export class RegisterPage {
   fullName: string = '';
@@ -18,7 +18,7 @@ export class RegisterPage {
   accountType: 'Personal' | 'Negocio' = 'Personal';
   termsAccepted: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor() {}
 
   register() {
     if (this.fullName && this.email && this.pass && this.termsAccepted) {
@@ -27,9 +27,9 @@ export class RegisterPage {
         email: this.email,
         accountType: this.accountType
       });
-      this.router.navigate(['/pages/login'], { replaceUrl: true });
     } else {
       console.log('Completa todos los campos');
     }
   }
 }
+

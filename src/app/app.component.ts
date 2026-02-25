@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import {
   IonApp, IonSplitPane, IonMenu, IonContent, IonList,
   IonMenuToggle, IonItem, IonIcon, IonLabel,
@@ -15,7 +15,7 @@ import {
   pricetagsOutline,
   logInOutline,
   personAddOutline
-} from 'ionicons/icons';
+} from 'ionicons/icons'; 
 import { Page } from './models/page';
 
 @Component({
@@ -24,24 +24,36 @@ import { Page } from './models/page';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    RouterLink, RouterLinkActive, IonApp, IonSplitPane,
-    IonMenu, IonContent, IonList, IonMenuToggle,
-    IonItem, IonIcon, IonLabel, IonRouterLink,
-    IonRouterOutlet, IonAvatar
+    RouterModule, 
+    RouterLink, 
+    RouterLinkActive, 
+    IonApp, 
+    IonSplitPane,
+    IonMenu, 
+    IonContent, 
+    IonList, 
+    IonMenuToggle,
+    IonItem, 
+    IonIcon, 
+    IonLabel, 
+    IonRouterLink,
+    IonRouterOutlet, 
+    IonAvatar
   ],
 })
 export class AppComponent {
   public appPages = [
-    new Page('Login','pages/login', 'log-in-outline'),
-    new Page('Register','pages/register', 'person-add-outline'),
+    new Page('Login', '/login', 'log-in-outline'),
+    new Page('Register', '/register', 'person-add-outline'),
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
     new Page('Reportes', '/reporte', 'newspaper-outline'),
-    new Page('Ajustes', '/ajustes', 'cog-outline'),
+    new Page('Configuración', '/configuracion', 'cog-outline'),
   ];
 
   constructor() {
+  
     addIcons({
       'log-in-outline': logInOutline,
       'person-add-outline': personAddOutline,
@@ -55,6 +67,6 @@ export class AppComponent {
   }
 
   onPageClick(url: string) {
-    window.location.href = `http://localhost:8100${url}`;
+    window.location.href = url;
   }
 }

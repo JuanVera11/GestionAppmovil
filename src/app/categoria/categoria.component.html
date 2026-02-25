@@ -1,3 +1,48 @@
-<p>
-  categoria works!
-</p>
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar color="white">
+    <ion-title>Mis Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="agregarCategoria()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense" class="ion-no-border">
+    <ion-toolbar color="white">
+      <ion-title size="large">Mis Categorías</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list lines="full" class="ion-no-padding">
+    <ion-item *ngFor="let cat of categorias" detail="true" button mode="ios">
+      
+      <div slot="start" class="category-icon">
+        <ion-icon [name]="cat.icon"></ion-icon>
+      </div>
+
+      <ion-label>
+        <h2>{{ cat.nombre }}</h2>
+        
+        <p>
+          ${{ formatCurrency(cat.asignado) }} Asignado • ${{ formatCurrency(cat.gastado) }} Gastado
+        </p>
+        
+        <ion-progress-bar 
+          class="custom-progress"
+          [class.over-budget]="cat.gastado > cat.asignado"
+          [value]="getProgress(cat.gastado, cat.asignado)">
+        </ion-progress-bar>
+      </ion-label>
+
+    </ion-item>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="agregarCategoria()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

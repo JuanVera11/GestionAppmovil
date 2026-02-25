@@ -1,0 +1,53 @@
+<ion-content>
+  <div class="profile-section ion-text-center ion-padding">
+    <div class="avatar-container" (click)="triggerFileInput()">
+      <ion-avatar>
+        <img [src]="profileImage" alt="Profile" />
+      </ion-avatar>
+      <div class="edit-badge">
+        <ion-icon name="camera-outline"></ion-icon>
+      </div>
+      <div class="status-indicator"></div>
+    </div>
+    
+    <h2 class="user-name">{{ userName }}</h2>
+    <p class="user-email">{{ userEmail }}</p>
+  </div>
+
+  <input id="file-input" type="file" (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+
+  <div class="settings-container ion-padding-horizontal">
+    <ion-list-header class="large-header">Cuenta</ion-list-header>
+    <ion-list lines="none">
+      <ion-item button detail="false" class="custom-item" (click)="editProfile()">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        <ion-label>Editar perfil</ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+      </ion-item>
+      
+      <ion-item button detail="false" class="custom-item" (click)="triggerFileInput()">
+        <ion-icon name="image-outline" slot="start"></ion-icon>
+        <ion-label>Cambiar imagen de perfil</ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header class="large-header">Apariencia</ion-list-header>
+    <ion-list lines="none">
+      <ion-item class="custom-item">
+        <ion-icon name="color-palette-outline" slot="start"></ion-icon>
+        <ion-label>Modo Color Especial</ion-label>
+        <ion-toggle slot="end" (ionChange)="toggleTheme($event)"></ion-toggle>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header class="large-header">Sistema</ion-list-header>
+    <ion-list lines="none">
+      <ion-item button detail="false" class="logout-item" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        <ion-label>Cerrar sesión</ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon danger-arrow"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

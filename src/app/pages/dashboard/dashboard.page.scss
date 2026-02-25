@@ -1,0 +1,177 @@
+/* src/app/pages/dashboard/dashboard.page.scss COMPLETO */
+.dashboard-content {
+    --background: linear-gradient(135deg, #667eea, #764ba2);
+
+    .header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .saldo-card {
+        --background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        margin: 0;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        ion-icon {
+            font-size: 2rem;
+            margin-right: 12px;
+        }
+
+        div {
+            h2 {
+                margin: 0;
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            p {
+                margin: 0 0 8px 0;
+                opacity: 0.9;
+            }
+        }
+    }
+
+    .stats-grid {
+        padding: 20px;
+    }
+
+    .stat-card {
+        --background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        height: 100px;
+        margin: 8px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+
+        &.glass-card {
+            transition: transform 0.2s;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+        }
+
+        ion-card-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+
+            .stat-icon {
+                font-size: 2rem;
+                display: block;
+                margin-bottom: 8px;
+                width: 100%;
+                text-align: center;
+            }
+
+            p {
+                margin: 4px 0;
+                opacity: 0.9;
+                text-align: center;
+            }
+
+            h3 {
+                margin: 4px 0 0 0;
+                font-size: 1.2rem;
+                font-weight: bold;
+                text-align: center;
+                width: 100%;
+            }
+        }
+    }
+
+    .progreso-card {
+        margin: 20px;
+        --background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+
+        ion-card-header {
+            text-align: center;
+
+            ion-card-title {
+                color: white;
+            }
+        }
+
+        ion-card-content {
+            ion-progress-bar {
+                --background: rgba(255, 255, 255, 0.3);
+                --progress-background: var(--ion-color-success);
+                height: 12px;
+                margin-bottom: 12px;
+            }
+
+            p {
+                color: white;
+                text-align: center;
+                margin: 0;
+            }
+        }
+    }
+
+    .rapido-section {
+        padding: 20px;
+
+        h3 {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        ion-grid {
+            ion-row {
+                ion-col {
+                    display: flex;
+                    justify-content: center;
+                }
+            }
+        }
+
+        .action-card {
+            --background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            height: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            &.glass-card {
+                transition: transform 0.2s;
+            }
+
+            &:hover,
+            &:active {
+                transform: translateY(-4px);
+            }
+
+            .action-icon {
+                font-size: 2.5rem;
+                color: var(--ion-color-primary);
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            p {
+                color: white;
+                margin: 0;
+                font-weight: 500;
+            }
+        }
+    }
+}
