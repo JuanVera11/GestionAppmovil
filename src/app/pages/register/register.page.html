@@ -8,28 +8,28 @@
         <div class="form1-group">
           <ion-label>Nombre Completo</ion-label>
           <ion-item class="custom-input">
-            <ion-input [(ngModel)]="fullName" type="text" required></ion-input>
+            <ion-input [(ngModel)]="fullName" name="fullName" type="text" required></ion-input>
           </ion-item>
         </div>
 
         <div class="form1-group">
           <ion-label>Email</ion-label>
           <ion-item class="custom-input">
-            <ion-input [(ngModel)]="email" type="email" required></ion-input>
+            <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
           </ion-item>
         </div>
 
         <div class="form1-group">
           <ion-label>Contraseña</ion-label>
           <ion-item class="custom-input">
-            <ion-input [(ngModel)]="pass" type="password" required></ion-input>
+            <ion-input [(ngModel)]="pass" name="pass" type="password" required></ion-input>
           </ion-item>
         </div>
 
         <div class="form1-group">
           <ion-label>Tipo Cuenta</ion-label>
           <ion-item lines="none">
-            <ion-select [(ngModel)]="accountType" interface="popover">
+            <ion-select [(ngModel)]="accountType" name="accountType" interface="popover">
               <ion-select-option value="Personal">Personal</ion-select-option>
               <ion-select-option value="Negocio">Negocio</ion-select-option>
             </ion-select>
@@ -37,7 +37,7 @@
         </div>
 
         <ion-item class="checkbox-group" lines="none">
-          <ion-checkbox [(ngModel)]="termsAccepted" slot="start"></ion-checkbox>
+          <ion-checkbox [(ngModel)]="termsAccepted" name="termsAccepted" slot="start"></ion-checkbox>
           <ion-label>Acepto términos</ion-label>
         </ion-item>
 

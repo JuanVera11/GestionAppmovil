@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <h1>Iniciar sesión</h1>
-      
+
       <div class="form-group">
         <ion-label>Correo</ion-label>
         <ion-input type="email" placeholder="ejemplo@correo.com" class="custom-input" [(ngModel)]="email"></ion-input>
@@ -18,8 +18,8 @@
       <div class="error-text" *ngIf="errorMsg">{{ errorMsg }}</div>
 
       <div class="links-container">
-        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-        <p class="register-link">¿No tienes cuenta? <span>Crear cuenta</span></p>
+        <a class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <p class="register-link">¿No tienes cuenta?<a href="/register" class="register-link-text">Crear cuenta</a></p>
       </div>
     </div>
   </div>

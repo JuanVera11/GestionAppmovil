@@ -26,7 +26,7 @@ export class RegisterPage {
     private authService: AuthService,
     private router: Router,
     private alertController: AlertController
-  ) { }
+  ) {}
 
   async register() {
     if (!this.fullName || !this.email || !this.pass || !this.termsAccepted) {
@@ -47,7 +47,7 @@ export class RegisterPage {
       );
 
       if (userId > 0) {
-        this.showAlert('Éxito', 'Usuario creado');
+        await this.showAlert('Éxito', 'Usuario creado. Inicia sesión.');
         this.router.navigate(['/pages/login']);
       }
     } catch (error: any) {
@@ -59,7 +59,9 @@ export class RegisterPage {
 
   private async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({
-      header, message, buttons: ['OK']
+      header,
+      message,
+      buttons: ['OK']
     });
     await alert.present();
   }
