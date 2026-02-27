@@ -1,5 +1,7 @@
 {
   "name": "GestionApp",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular-standalone"
 }

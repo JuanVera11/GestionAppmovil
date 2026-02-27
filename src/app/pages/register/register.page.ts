@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlertController } from '@ionic/angular';
+import { Database } from '../../services/database';
 
 @Component({
   selector: 'app-register',
@@ -25,10 +26,13 @@ export class RegisterPage {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private database: Database
+  ) { }
 
   async register() {
+    console.log('Register iniciado:', { fullName: this.fullName, email: this.email });
+
     if (!this.fullName || !this.email || !this.pass || !this.termsAccepted) {
       this.errorMsg = 'Completa todos los campos';
       return;
@@ -38,24 +42,33 @@ export class RegisterPage {
     this.errorMsg = '';
 
     try {
-      const [nombre, apellido] = this.fullName.split(' ', 2);
-      const userId = await this.authService.register(
+      const [nombre, apellido] = this.fullName.trim().split(' ', 2);
+
+      await this.database.waitForReady();
+      console.log('Database lista');
+
+      await this.authService.register(
         nombre || this.fullName,
         apellido || '',
         this.email,
         this.pass
       );
 
-      if (userId > 0) {
-        await this.showAlert('Éxito', 'Usuario creado. Inicia sesión.');
-        this.router.navigate(['/pages/login']);
+      await this.showAlert('Éxito', '¡Cuenta creada! Inicia sesión.');
+      this.router.navigate(['/login']);
+    }
+    catch (error: any) {
+      console.error('Error completo register:', error);
+      if (error.message?.includes('UNIQUE constraint failed')) {
+        this.errorMsg = 'Este correo ya está registrado';
+      } else {
+        this.errorMsg = error.message || 'Error al registrar';
       }
-    } catch (error: any) {
-      this.errorMsg = error.message || 'Error al registrar';
     } finally {
       this.loading = false;
     }
   }
+
 
   private async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({

@@ -26,6 +26,8 @@ export class LoginPage {
   ) {}
 
   async onLogin() {
+    console.log('🔑 Login attempt:', { email: this.email, password: this.password });
+    
     if (!this.email || !this.password) {
       this.errorMsg = 'Completa todos los campos';
       return;
@@ -36,13 +38,18 @@ export class LoginPage {
 
     try {
       const user = await this.authService.login(this.email, this.password);
+      console.log('Login result:', user);
+      
       if (user) {
-        this.router.navigate(['/pages/dashboard']);
+        console.log('Redirect dashboard');
+        this.router.navigate(['/dashboard']);
       } else {
+        console.log('No user found');
         this.errorMsg = 'Credenciales incorrectas';
       }
     } catch (error) {
-      this.errorMsg = 'Error de conexión';
+      console.error('Login ERROR:', error);
+      this.errorMsg = 'Error de base de datos';
     } finally {
       this.loading = false;
     }
