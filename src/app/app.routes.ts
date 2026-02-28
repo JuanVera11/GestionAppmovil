@@ -3,8 +3,12 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'welcome',
     pathMatch: 'full',
+  },
+  {
+    path: 'welcome',
+    loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage)
   },
   {
     path: 'login',
@@ -44,16 +48,14 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.page').then( m => m.DashboardPage)
+    loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage)
   },
   {
     path: 'configuracion',
     loadComponent: () => import('./pages/configuracion/configuracion.page').then(m => m.ConfiguracionPage)
-
   },
   {
     path: '**',
-    redirectTo: 'login'
-
+    redirectTo: 'welcome' 
   }
 ];

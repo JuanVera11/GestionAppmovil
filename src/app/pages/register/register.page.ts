@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular'; // Solo una vez aquí
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Database } from '../../services/database';
 
 @Component({
   selector: 'app-register',
@@ -24,42 +25,48 @@ export class RegisterPage {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private alertController: AlertController
-  ) {}
+    private alertController: AlertController,
+    private database: Database
+  ) { }
 
   async register() {
-    // 1. Validación inicial y logs (de tu primera versión)
-    if (!this.fullName || !this.email || !this.pass || !this.termsAccepted) {
-      this.errorMsg = 'Completa todos los campos';
-      console.log('Completa todos los campos');
+    // 1. Validación inicial
+    if (!this.fullName.trim() || !this.email.trim() || !this.pass.trim() || !this.termsAccepted) {
+      this.errorMsg = 'Completa todos los campos y acepta los términos';
       return;
     }
 
-    console.log('Register data:', {
-      fullName: this.fullName,
-      email: this.email,
-      accountType: this.accountType
-    });
-
-    // 2. Lógica de registro (de tu segunda versión)
     this.loading = true;
     this.errorMsg = '';
 
     try {
-      const [nombre, apellido] = this.fullName.split(' ', 2);
-      const userId = await this.authService.register(
-        nombre || this.fullName,
-        apellido || '',
+      // Separar nombre y apellido de forma segura
+      const nameParts = this.fullName.trim().split(' ');
+      const nombre = nameParts[0];
+      const apellido = nameParts.slice(1).join(' ') || '';
+
+      // Esperar a que la base de datos esté lista
+      await this.database.waitForReady();
+
+      await this.authService.register(
+        nombre,
+        apellido,
         this.email,
         this.pass
       );
 
-      if (userId > 0) {
-        await this.showAlert('Éxito', 'Usuario creado. Inicia sesión.');
-        this.router.navigate(['/pages/login']);
+      await this.showAlert('Éxito', '¡Cuenta creada! Inicia sesión.');
+      this.router.navigate(['/login']);
+    } 
+    catch (error: any) {
+      console.error('Error completo register:', error);
+      
+      // Manejo de errores específicos
+      if (error.message?.includes('UNIQUE constraint failed')) {
+        this.errorMsg = 'Este correo ya está registrado';
+      } else {
+        this.errorMsg = error.message || 'Error al registrar';
       }
-    } catch (error: any) {
-      this.errorMsg = error.message || 'Error al registrar';
     } finally {
       this.loading = false;
     }

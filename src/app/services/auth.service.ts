@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Database, UsuarioRecord } from './database';
-import { Preferences } from '@capacitor/preferences';
+import { Database } from './database';
+
+export interface UsuarioRecord {
+    id?: number; // El id es opcional porque no existe antes de insertar en la BD
+    nombre: string;
+    apellido: string;
+    correo: string;
+    contrasena: string;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -8,50 +15,40 @@ import { Preferences } from '@capacitor/preferences';
 export class AuthService {
     constructor(private db: Database) { }
 
+    async login(correo: string, contrasena: string): Promise<any> {
+        await this.db.waitForReady();
+        const user = await this.db.loginUsuario(correo, contrasena);
+        
+        // Verificación segura de la existencia del usuario e id
+        if (user && user.id !== undefined) {
+            localStorage.setItem('userId', user.id.toString());
+            localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
+        }
+        return user;
+    }
+
     async register(nombre: string, apellido: string, correo: string, contrasena: string): Promise<number> {
-        await this.db.initializeDatabase();
-
-        const usuario: UsuarioRecord = {
-            id: 0,
-            nombre: nombre.trim(),
-            apellido: apellido.trim(),
-            correo: correo.trim(),
-            contrasena: contrasena.trim()
-        };
-
-        return await this.db.createUsuario(usuario);
+        await this.db.waitForReady();
+        // Se elimina 'id: 0', la BD se encarga del Autoincrement
+        return await this.db.createUsuario({ nombre, apellido, correo, contrasena });
     }
 
-    async login(correo: string, contrasena: string): Promise<UsuarioRecord | null> {
-        await this.db.initializeDatabase();
+    async getCurrentUser(): Promise<any> {
+        const value = localStorage.getItem('userId');
+        if (!value) return null;
 
-        const result = await this.db.query(
-            'SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?',
-            [correo.trim(), contrasena.trim()]
+        await this.db.waitForReady();
+        const result = this.db.query(
+            'SELECT * FROM usuarios WHERE id = ?;',
+            [parseInt(value)]
         );
-
-        if (result.values && result.values.length > 0) {
-            const user = result.values[0] as UsuarioRecord;
-            await Preferences.set({ key: 'userId', value: user.id.toString() });
-            await Preferences.set({ key: 'userName', value: `${user.nombre} ${user.apellido}` });
-            return user;
-        }
-        return null;
-    }
-    
-
-    async getCurrentUser(): Promise<UsuarioRecord | null> {
-        const { value } = await Preferences.get({ key: 'userId' });
-        if (value) {
-            const result = await this.db.query('SELECT * FROM usuarios WHERE id = ?', [parseInt(value)]);
-            return result.values?.[0] as UsuarioRecord || null;
-        }
-        return null;
+        
+        return result.length > 0 ? result[0] : null;
     }
 
     async logout(): Promise<void> {
-        await Preferences.remove({ key: 'userId' });
-        await Preferences.remove({ key: 'userName' });
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
     }
 
     async isLoggedIn(): Promise<boolean> {
