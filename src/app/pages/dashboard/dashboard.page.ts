@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { DataService } from '../../services/data'; 
 
 @Component({
   selector: 'app-dashboard',
@@ -11,22 +12,49 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, RouterModule, IonicModule]
 })
 export class DashboardPage {
-  saldoActual = '$1,250,000';
-  gastosMes = '$850,000';
-  ingresosMes = '$2,100,000';
-  progresoPresupuesto = 72;
+  private dataService = inject(DataService);
 
-  cards = [
-    { icon: 'trending-up', title: 'Ingresos', value: '$2,100,000', color: 'success' },
-    { icon: 'trending-down', title: 'Gastos', value: '$850,000', color: 'danger' },
-    { icon: 'wallet', title: 'Saldo', value: '$1,250,000', color: 'primary' },
-    { icon: 'pie-chart', title: 'Presupuesto', value: '72%', color: 'warning' }
-  ];
+  get saldoActual() {
+    return this.dataService.formatMoney(this.dataService.saldoActual);
+  }
+
+  get progresoPresupuesto() {
+    return this.dataService.porcentajeProgreso;
+  }
+
+  get cards() {
+    return [
+      { 
+        icon: 'trending-up', 
+        title: 'Ingresos', 
+        value: this.dataService.formatMoney(this.dataService.ingresosMes), 
+        color: 'success' 
+      },
+      { 
+        icon: 'trending-down', 
+        title: 'Gastos', 
+        value: this.dataService.formatMoney(this.dataService.totalGastado), 
+        color: 'danger' 
+      },
+      { 
+        icon: 'wallet', 
+        title: 'Saldo', 
+        value: this.saldoActual, 
+        color: 'primary' 
+      },
+      { 
+        icon: 'pie-chart', 
+        title: 'Presupuesto', 
+        value: this.progresoPresupuesto + '%', 
+        color: 'warning' 
+      }
+    ];
+  }
 
   rapidoAccess = [
-  { icon: 'add-circle', title: 'Nueva Transacción', route: '/transaccion' },
-  { icon: 'stats-chart', title: 'Reportes', route: '/reporte' },
-  { icon: 'card', title: 'Presupuestos', route: '/presupuesto' },
-  { icon: 'grid', title: 'Categorías', route: '/categoria' }
+    { icon: 'add-circle', title: 'Nueva Transacción', route: '/transaccion' },
+    { icon: 'stats-chart', title: 'Reportes', route: '/reporte' },
+    { icon: 'card', title: 'Presupuestos', route: '/presupuesto' },
+    { icon: 'grid', title: 'Categorías', route: '/categoria' }
   ];
 }

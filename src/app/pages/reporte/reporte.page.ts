@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DataService } from '../../services/data';
 import { 
   IonContent, IonIcon, IonSelect, IonSelectOption, IonItem 
 } from '@ionic/angular/standalone';
@@ -32,6 +33,7 @@ import { pieChart, funnelOutline, chevronDownOutline, walletOutline, cashOutline
 
   ngOnInit() {}
 
+  //@returns La sumatoria total de los gastos presentes en `datosActuales`
   get totalGastado(): number {
     return this.datosActuales.reduce((acc, curr) => acc + curr.valor, 0);
   }
@@ -40,10 +42,12 @@ import { pieChart, funnelOutline, chevronDownOutline, walletOutline, cashOutline
     return this.presupuestoTotal - this.totalGastado;
   }
 
+  // @returns El porcentaje de ejecución presupuestal redondeado
   get porcentajeGastoTotal(): number {
     return Math.round((this.totalGastado / this.presupuestoTotal) * 100);
   }
 
+  //Si el gasto excede el 100%, el color cambia a rojo
   get donutStyle() {
     const pct = this.porcentajeGastoTotal > 100 ? 100 : this.porcentajeGastoTotal;
     const color = this.porcentajeGastoTotal > 100 ? '#ff4961' : '#6366f1';
