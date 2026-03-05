@@ -41,41 +41,38 @@ export class Database {
   ];
 
   async initializeDatabase(): Promise<void> {
-  if (this.ready$.value) return;
+    if (this.ready$.value) return;
 
-  try {
-    // ✅ Import dinámico compatible con Vite
-    const mod = await import('sql.js');
-    const initSqlJs = (mod as any).default ?? (mod as any);
-    
-    this.SQL = await initSqlJs({
-      locateFile: () => '/assets/sql-wasm.wasm'
-    });
+    try {
+      const mod = await import('sql.js');
+      const initSqlJs = (mod as any).default ?? (mod as any);
 
-    const saved = localStorage.getItem(this.dbKey);
-    if (saved) {
-      const binary = atob(saved);
-      const buf = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        buf[i] = binary.charCodeAt(i);
+      this.SQL = await initSqlJs({
+        locateFile: () => '/assets/sql-wasm.wasm'
+      });
+
+      const saved = localStorage.getItem(this.dbKey);
+      if (saved) {
+        const binary = atob(saved);
+        const buf = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          buf[i] = binary.charCodeAt(i);
+        }
+        this.db = new this.SQL.Database(buf);
+      } else {
+        this.db = new this.SQL.Database();
       }
-      this.db = new this.SQL.Database(buf);
-      console.log('✅ BD recuperada de localStorage');
-    } else {
-      this.db = new this.SQL.Database();
-      console.log('✅ BD nueva creada');
-    }
 
-    await this.createSchema();
-    await this.seedBaseData();
-    this.save();
-    this.ready$.next(true);
-    console.log('✅ Base de datos lista');
-  } catch (error) {
-    console.error('❌ Error inicializando BD:', error);
-    throw error;
+      await this.createSchema();
+      await this.seedBaseData();
+      this.save();
+      this.ready$.next(true);
+      console.log('Base de datos lista');
+    } catch (error) {
+      console.error('Error inicializando BD:', error);
+      throw error;
+    }
   }
-}
 
 
   // Guarda la BD en localStorage
@@ -106,68 +103,68 @@ export class Database {
 
   // Ejecuta SQL sin retorno
   run(sql: string, values: any[] = []): any {
-  const stmt = this.db.prepare(sql);
-  stmt.bind(values);
-  stmt.step();
-  stmt.free();
-  this.save();
-  // Obtener el último id insertado
-  const idResult = this.db.exec('SELECT last_insert_rowid() as id;');
-  return idResult[0]?.values[0][0] ?? 0;
-}
+    const stmt = this.db.prepare(sql);
+    stmt.bind(values);
+    stmt.step();
+    stmt.free();
+    this.save();
+    // Obtener el último id insertado
+    const idResult = this.db.exec('SELECT last_insert_rowid() as id;');
+    return idResult[0]?.values[0][0] ?? 0;
+  }
 
   // Ejecuta SELECT y retorna filas como array de objetos
   query(sql: string, values: any[] = []): any[] {
-  try {
-    const result = this.db.exec(sql, values);
-    if (!result || result.length === 0) return [];
-    const columns = result[0].columns;
-    return result[0].values.map((row: any[]) => {
-      const obj: any = {};
-      columns.forEach((col: string, i: number) => {
-        obj[col] = row[i];
+    try {
+      const result = this.db.exec(sql, values);
+      if (!result || result.length === 0) return [];
+      const columns = result[0].columns;
+      return result[0].values.map((row: any[]) => {
+        const obj: any = {};
+        columns.forEach((col: string, i: number) => {
+          obj[col] = row[i];
+        });
+        return obj;
       });
-      return obj;
-    });
-  } catch (e) {
-    console.warn('Query error:', e);
-    return [];
+    } catch (e) {
+      console.warn('Query error:', e);
+      return [];
+    }
   }
-}
 
 
   // ─── USUARIOS ────────────────────────────────────────────
 
   async createUsuario(input: UsuarioRecord): Promise<number> {
-  const nombre = (input.nombre ?? '').trim();
-  const apellido = (input.apellido ?? '').trim();
-  if (!nombre) throw new Error('El nombre es obligatorio');
+    const nombre = (input.nombre ?? '').trim();
+    const apellido = (input.apellido ?? '').trim();
+    if (!nombre) throw new Error('El nombre es obligatorio');
 
-  this.db.run(
-    'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
-    [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
-  );
+    this.db.run(
+      'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
+      [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
+    );
 
-  const result = this.query(
-    'SELECT id FROM usuarios WHERE correo = ?;',
-    [input.correo.trim()]
-  );
-  const id = result[0]?.id ?? 0;
-  this.save();
-  console.log('✅ Usuario creado con id:', id);
-  return Number(id);
-}
+    const result = this.query(
+      'SELECT id FROM usuarios WHERE correo = ?;',
+      [input.correo.trim()]
+    );
+    const id = result[0]?.id ?? 0;
+    this.save();
+    console.log('Usuario creado con id:', id);
+    return Number(id);
+  }
 
-async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
-  const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
-  if (result.length === 0) return false;
-  this.db.run(
-    'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
-    [nuevaContrasena.trim(), correo.trim()]
-  );
-  this.save();
-  return true;
-}
+  async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
+    const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
+    if (result.length === 0) return false;
+    this.db.run(
+      'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
+      [nuevaContrasena.trim(), correo.trim()]
+    );
+    this.save();
+    return true;
+  }
 
 
 
@@ -224,7 +221,8 @@ async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean
       nombre TEXT NOT NULL,
       apellido TEXT NOT NULL,
       correo TEXT NOT NULL UNIQUE,
-      contrasena TEXT NOT NULL
+      contrasena TEXT NOT NULL,
+      foto TEXT DEFAULT NULL
     );`);
 
     this.db.run(`CREATE TABLE IF NOT EXISTS categorias (
@@ -254,8 +252,9 @@ async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean
       descripcion TEXT,
       idUsuario INTEGER NOT NULL
     );`);
-
-    console.log('✅ Schema creado');
+    try {
+      this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
+    } catch (e) { }
   }
 
   private async seedBaseData(): Promise<void> {

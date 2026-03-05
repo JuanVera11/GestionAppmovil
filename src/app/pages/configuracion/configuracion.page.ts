@@ -1,91 +1,86 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, 
-  IonIcon, IonLabel, IonAvatar, IonListHeader, IonToggle, AlertController 
+import { Router } from '@angular/router';
+import {
+  IonContent, IonInput, IonLabel, IonButton, IonIcon, AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  createOutline, imageOutline, notificationsOutline, colorPaletteOutline,
-  sunnyOutline, logOutOutline, cameraOutline, chevronForwardOutline 
-} from 'ionicons/icons';
+import { cameraOutline } from 'ionicons/icons';
+import { AuthService } from 'src/app/services/auth.service';
+import { Database } from 'src/app/services/database';
 
 @Component({
   selector: 'app-configuracion',
   templateUrl: './configuracion.page.html',
   styleUrls: ['./configuracion.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, 
-    IonContent, IonList, IonItem, IonIcon, IonLabel, 
-    IonAvatar, IonListHeader, IonToggle
-  ]
+  imports: [CommonModule, FormsModule, IonContent, IonInput, IonLabel, IonButton, IonIcon]
 })
-export class ConfiguracionPage {
-  // iNFORMACIÓN DEL MOMENTO DEL USUARIO 
-  userName: string = 'Usuario GestionApp';
-  userEmail: string = 'usuario@GestionApp.com';
-  profileImage: string = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&h=150&auto=format&fit=crop';
-  isDark: boolean = false;
+export class ConfiguracionPage implements OnInit {
+  userName: string = '';
+  userEmail: string = '';
+  profileImage: string = 'assets/default-avatar.png';
 
-  constructor(private alertController: AlertController) {
-    addIcons({ 
-      createOutline, imageOutline, notificationsOutline, colorPaletteOutline,
-      sunnyOutline, logOutOutline, cameraOutline, chevronForwardOutline 
-    });
+  editNombre: string = '';
+  editApellido: string = '';
+  editCorreo: string = '';
+
+  private userId: number = 0;
+
+  constructor(
+    private authService: AuthService,
+    private database: Database,
+    private router: Router,
+    private alertController: AlertController
+  ) {
+    addIcons({ cameraOutline });
   }
 
-  // EDITAR INFORMACIÓN USUARIO
-  async editProfile() {
+  async ngOnInit() {
+    await this.database.initializeDatabase();
+    await this.loadUserData();
+  }
+
+  async ionViewWillEnter() {
+    await this.loadUserData();
+  }
+
+  async loadUserData() {
+    const user = await this.authService.getCurrentUser();
+    if (user) {
+      this.userId = user.id;
+      this.userName = `${user.nombre} ${user.apellido}`;
+      this.userEmail = user.correo;
+      this.profileImage = user.foto ?? 'assets/default-avatar.png';
+      this.editNombre = user.nombre;
+      this.editApellido = user.apellido;
+      this.editCorreo = user.correo;
+    }
+  }
+
+  async guardarCambios() {
+    if (!this.editNombre.trim()) {
+      const alert = await this.alertController.create({
+        header: 'Error', message: 'El nombre no puede estar vacío.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+    this.database.run(
+      'UPDATE usuarios SET nombre = ?, apellido = ?, correo = ? WHERE id = ?;',
+      [this.editNombre.trim(), this.editApellido.trim(), this.editCorreo.trim(), this.userId]
+    );
+    localStorage.setItem('userName', `${this.editNombre.trim()} ${this.editApellido.trim()}`);
+    await this.loadUserData();
     const alert = await this.alertController.create({
-      header: 'Editar Perfil',
-      cssClass: 'dark-alert', 
-      inputs: [
-        {
-          name: 'nuevoNombre', 
-          type: 'text',
-          placeholder: 'Nombre',
-          value: this.userName 
-        },
-        {
-          name: 'nuevoEmail',
-          type: 'email',
-          placeholder: 'Correo',
-          value: this.userEmail
-        }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        { 
-          text: 'Guardar', 
-          handler: (data) => {
-            // Actualizamos las variables con lo que el usuario escribió, 
-            // El TRIM es para no permitir espacios al principio y final de la cadena de texto
-            if (data.nuevoNombre && data.nuevoNombre.trim() !== '') {
-              this.userName = data.nuevoNombre;
-            }
-            if (data.nuevoEmail && data.nuevoEmail.trim() !== '') {
-              this.userEmail = data.nuevoEmail;
-            }
-          } 
-        }
-      ]
+      header: 'Guardado', message: 'Datos actualizados correctamente.',
+      buttons: ['OK']
     });
     await alert.present();
   }
 
-  // GESTIÓN DE TEMA,  EL MODO COLOR ESPECIAL
-  toggleTheme(event: any) {
-    this.isDark = event.detail.checked;
-    if (this.isDark) {
-      document.body.classList.add('special-mode');
-    } else {
-      document.body.classList.remove('special-mode');
-    }
-  }
-
-  // IMAGEN DE USUARIO  
   triggerFileInput() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
     if (fileInput) fileInput.click();
@@ -93,26 +88,28 @@ export class ConfiguracionPage {
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => { 
-        this.profileImage = e.target.result as string; 
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const base64 = e.target.result as string;
+      this.profileImage = base64;
+      this.database.run('UPDATE usuarios SET foto = ? WHERE id = ?;', [base64, this.userId]);
+    };
+    reader.readAsDataURL(file);
   }
 
-  //  CERRAR SESIÓN DE USUARIO
   async logout() {
     const alert = await this.alertController.create({
       header: '¿Cerrar sesión?',
       message: '¿Estás seguro de que deseas salir?',
       buttons: [
-        { text: 'No, volver', role: 'cancel' },
-        { 
-          text: 'Cerrar Sesión', 
-          role: 'destructive',
-          handler: () => { console.log('Sesión cerrada'); }
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cerrar Sesión', role: 'destructive',
+          handler: async () => {
+            await this.authService.logout();
+            this.router.navigate(['/welcome']);
+          }
         }
       ]
     });
