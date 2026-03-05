@@ -54,4 +54,8 @@ export class LoginPage {
       this.loading = false;
     }
   }
+  goToForgotPassword() {
+  this.router.navigate(['/forgot-password']);
+}
+
 }

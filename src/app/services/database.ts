@@ -147,16 +147,28 @@ export class Database {
     'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
     [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
   );
-  this.save();
 
-  // ✅ Usar getRowsModified() + query directa para obtener el id real
-  const result = this.db.exec(
-    `SELECT id FROM usuarios WHERE correo = '${input.correo.trim()}';`
+  const result = this.query(
+    'SELECT id FROM usuarios WHERE correo = ?;',
+    [input.correo.trim()]
   );
-  const id = result[0]?.values[0][0] ?? 0;
+  const id = result[0]?.id ?? 0;
+  this.save();
   console.log('✅ Usuario creado con id:', id);
   return Number(id);
 }
+
+async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
+  const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
+  if (result.length === 0) return false;
+  this.db.run(
+    'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
+    [nuevaContrasena.trim(), correo.trim()]
+  );
+  this.save();
+  return true;
+}
+
 
 
 
