@@ -55,4 +55,9 @@ export class AuthService {
         const user = await this.getCurrentUser();
         return !!user;
     }
+
+    async resetPassword(correo: string, nuevaContrasena: string): Promise<boolean> {
+        await this.db.waitForReady();
+        return await this.db.updateContrasena(correo, nuevaContrasena);
+    }
 }

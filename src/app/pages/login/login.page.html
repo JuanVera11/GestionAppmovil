@@ -18,7 +18,7 @@
       <div class="error-text" *ngIf="errorMsg">{{ errorMsg }}</div>
 
       <div class="links-container">
-        <a class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <a class="forgot-password" (click)="goToForgotPassword()">¿Olvidaste tu contraseña?</a>
         <p class="register-link">¿No tienes cuenta?<a href="/register" class="register-link-text">Crear cuenta</a></p>
       </div>
     </div>

@@ -7,6 +7,7 @@ export interface UsuarioRecord {
   apellido: string;
   correo: string;
   contrasena: string;
+  foto?: string;
 }
 
 export interface CategoriaRecord {
@@ -41,15 +42,13 @@ export class Database {
     if (this.ready$.value) return;
 
     try {
-      // Carga dinámica de la librería sql.js
       const mod = await import('sql.js');
       const initSqlJs = (mod as any).default ?? (mod as any);
-      
+
       this.SQL = await initSqlJs({
         locateFile: (file: string) => `/assets/${file}`
       });
 
-      // Recuperación de datos existentes en el almacenamiento local
       const saved = localStorage.getItem(this.dbKey);
       if (saved) {
         const binary = atob(saved);
@@ -66,13 +65,13 @@ export class Database {
       await this.seedBaseData();
       this.save();
       this.ready$.next(true);
+      console.log('Base de datos lista');
     } catch (error) {
-      console.error('Error DB Init:', error);
+      console.error('Error inicializando BD:', error);
       throw error;
     }
   }
 
-  // Serializa y persiste la base de datos en localStorage
   private save(): void {
     if (!this.db) return;
     try {
@@ -88,17 +87,16 @@ export class Database {
     return this.ready$.asObservable();
   }
 
-  // Bloquea la ejecución hasta que la base de datos esté inicializada
   async waitForReady(): Promise<void> {
     if (this.ready$.value) return;
     await firstValueFrom(this.ready$.pipe(filter(r => r === true)));
   }
 
-  // Ejecuta comandos de escritura y retorna el ID generado
   run(sql: string, values: any[] = []): any {
     try {
       const stmt = this.db.prepare(sql);
-      stmt.run(values);
+      stmt.bind(values);
+      stmt.step();
       stmt.free();
       this.save();
       const res = this.db.exec('SELECT last_insert_rowid();');
@@ -109,7 +107,6 @@ export class Database {
     }
   }
 
-  // Ejecuta consultas de lectura y formatea el resultado como array de objetos
   query(sql: string, values: any[] = []): any[] {
     try {
       const result = this.db.exec(sql, values);
@@ -117,19 +114,40 @@ export class Database {
       const columns = result[0].columns;
       return result[0].values.map((row: any[]) => {
         const obj: any = {};
-        columns.forEach((col: string, i: number) => obj[col] = row[i]);
+        columns.forEach((col: string, i: number) => {
+          obj[col] = row[i];
+        });
         return obj;
       });
     } catch (e) {
+      console.warn('Query error:', e);
       return [];
     }
   }
 
   async createUsuario(input: UsuarioRecord): Promise<number> {
+    const nombre = (input.nombre ?? '').trim();
+    const apellido = (input.apellido ?? '').trim();
+    if (!nombre) throw new Error('El nombre es obligatorio');
+
     return this.run(
       'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
-      [input.nombre.trim(), input.apellido.trim(), input.correo.trim(), input.contrasena.trim()]
+      [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
     );
+  }
+
+  async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
+    const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
+    if (result.length === 0) return false;
+    this.run(
+      'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
+      [nuevaContrasena.trim(), correo.trim()]
+    );
+    return true;
+  }
+
+  async getUsuarios(): Promise<UsuarioRecord[]> {
+    return this.query('SELECT * FROM usuarios ORDER BY nombre ASC;') as UsuarioRecord[];
   }
 
   async loginUsuario(correo: string, contrasena: string): Promise<UsuarioRecord | null> {
@@ -164,23 +182,44 @@ export class Database {
     return true;
   }
 
-  // Definición de tablas iniciales
   private async createSchema(): Promise<void> {
     this.db.run('PRAGMA foreign_keys = ON;');
+    
+    // Ejecución por bloques para evitar errores de sintaxis
     this.db.run(`
       CREATE TABLE IF NOT EXISTS usuarios (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL,
         apellido TEXT NOT NULL,
         correo TEXT NOT NULL UNIQUE,
-        contrasena TEXT NOT NULL
+        contrasena TEXT NOT NULL,
+        foto TEXT DEFAULT NULL
       );
+    `);
+
+    this.db.run(`
       CREATE TABLE IF NOT EXISTS categorias (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL UNIQUE,
         valorAsignado REAL DEFAULT 0,
         valorGasto REAL DEFAULT 0
       );
+    `);
+
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS presupuestos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        monto REAL NOT NULL,
+        ingreso REAL DEFAULT 0,
+        gasto REAL DEFAULT 0,
+        mes TEXT NOT NULL,
+        ano INTEGER NOT NULL,
+        estado TEXT,
+        idUsuarioFk INTEGER NOT NULL
+      );
+    `);
+
+    this.db.run(`
       CREATE TABLE IF NOT EXISTS transacciones (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         monto REAL NOT NULL,
@@ -191,9 +230,15 @@ export class Database {
         idUsuario INTEGER NOT NULL
       );
     `);
+
+    // Intento de migración silenciosa para la columna foto
+    try {
+      this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
+    } catch (e) { 
+      // Si la columna ya existe, fallará silenciosamente
+    }
   }
 
-  // Inserta categorías por defecto si la tabla está vacía
   private async seedBaseData(): Promise<void> {
     const res = this.query('SELECT COUNT(*) as total FROM categorias;');
     if (Number(res[0]?.total) > 0) return;

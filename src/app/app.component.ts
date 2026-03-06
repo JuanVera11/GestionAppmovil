@@ -57,6 +57,10 @@ export class AppComponent implements OnInit {
 
   public isWeb: boolean = false;
 
+  public userName: string = 'Usuario';
+
+  public userPhoto: string = 'assets/default-avatar.png';
+
   private sqlite = new SQLiteConnection(CapacitorSQLite);
 
   constructor(
@@ -77,24 +81,27 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    console.log('1️⃣ platform.ready iniciando...');
     await this.platform.ready();
-    console.log('2️⃣ platform.ready OK');
-
-    console.log('3️⃣ initializeDatabase iniciando...');
     await this.database.initializeDatabase();
-    console.log('4️⃣ ✅ Base de datos lista');
-
+    await this.loadUserData();
     await this.checkLoginStatus();
-    console.log('5️⃣ checkLoginStatus OK');
 
-    this.router.events.subscribe(() => {
+    this.router.events.subscribe(async() => {
+      await this.loadUserData();
       this.checkLoginStatus();
     });
   }
 
-
-
+  async loadUserData() {
+    const user = await this.authService.getCurrentUser();
+    if (user) {
+      this.userName = `${user.nombre} ${user.apellido}`;
+      this.userPhoto = user.foto ?? 'assets/default-avatar.png';
+    } else {
+      this.userName = 'Usuario';
+      this.userPhoto = 'assets/default-avatar.png';
+    }
+  }
 
   async checkLoginStatus(): Promise<void> {
     const userId = localStorage.getItem('userId');
@@ -109,6 +116,8 @@ export class AppComponent implements OnInit {
   async onLogout() {
     await this.authService.logout();
     this.isLoggedIn = false;
+    this.userName = 'Usuario';
+    this.userPhoto = 'assets/default-avatar.png';
     this.router.navigate(['/welcome']);
   }
 }
