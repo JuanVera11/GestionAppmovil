@@ -59,6 +59,8 @@ export class AppComponent implements OnInit {
 
   public userName: string = 'Usuario';
 
+  public userPhoto: string = 'assets/default-avatar.png';
+
   private sqlite = new SQLiteConnection(CapacitorSQLite);
 
   constructor(
@@ -94,8 +96,10 @@ export class AppComponent implements OnInit {
     const user = await this.authService.getCurrentUser();
     if (user) {
       this.userName = `${user.nombre} ${user.apellido}`;
+      this.userPhoto = user.foto ?? 'assets/default-avatar.png';
     } else {
       this.userName = 'Usuario';
+      this.userPhoto = 'assets/default-avatar.png';
     }
   }
 
@@ -113,6 +117,7 @@ export class AppComponent implements OnInit {
     await this.authService.logout();
     this.isLoggedIn = false;
     this.userName = 'Usuario';
+    this.userPhoto = 'assets/default-avatar.png';
     this.router.navigate(['/welcome']);
   }
 }

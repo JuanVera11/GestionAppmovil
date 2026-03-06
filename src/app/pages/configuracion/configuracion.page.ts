@@ -94,7 +94,9 @@ export class ConfiguracionPage implements OnInit {
       const base64 = e.target.result as string;
       this.profileImage = base64;
       this.database.run('UPDATE usuarios SET foto = ? WHERE id = ?;', [base64, this.userId]);
+      localStorage.setItem('userPhoto', base64);
     };
+    
     reader.readAsDataURL(file);
   }
 
