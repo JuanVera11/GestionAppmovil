@@ -65,16 +65,21 @@ import { pieChart, funnelOutline, chevronDownOutline, walletOutline, cashOutline
   cambiarFiltro(tipo: string) {
   this.filtroSeleccionado = tipo;
 
+  // Mes en reportes
   if (tipo === 'mes') {
     this.datosActuales = [
       { valor: 1200000 }, { valor: 500000 }, { valor: 900000 }, 
       { valor: 300000 }, { valor: 600000 }, { valor: 200000 }
     ];
+    // Los ultimos 7 dias
   } else if (tipo === '7dias') {
     this.datosActuales = [
       { valor: 850000 }, { valor: 320000 }, { valor: 1100000 }, 
       { valor: 450000 }, { valor: 200000 }, { valor: 150000 }
     ];
+
+    // datos personalizados, que hacen parte de esos reportes
+    // Pero digamos que en un diferente contexto de tiempo
   } else if (tipo === 'personalizado') {
     this.datosActuales = [
       { valor: 500000 }, { valor: 300000 }, { valor: 400000 }, 

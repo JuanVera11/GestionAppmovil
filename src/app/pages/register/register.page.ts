@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicModule, AlertController } from '@ionic/angular'; // Solo una vez aquí
+import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
