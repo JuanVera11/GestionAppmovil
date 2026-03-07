@@ -1,131 +1,211 @@
-.register-content {
-    --background: linear-gradient(135deg, #667eea 100%);
+.register-content{
+  --background: linear-gradient(135deg, #667eea 100%);
 }
 
-.register-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100%;
-    padding: 20px;
+// CONTENEDOR PRINCIPAL
+
+.register-container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:100vh;
+  padding:clamp(12px,4vw,24px);
+  box-sizing:border-box;
 }
 
-.register-card {
-    width: 100%;
-    max-width: 400px;
-    background: white;
-    border-radius: 24px;
-    padding: 40px 30px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    text-align: center;
+// TARJETA REGISTER
 
-    h1 {
-        margin-top: 0;
-        margin-bottom: 35px;
-        font-size: 32px;
-        font-weight: 800;
-        color: #2c3e50;
-    }
+.register-card{
+  width:100%;
+  max-width:400px;
+  background:white;
+  border-radius:24px;
+  padding:clamp(24px,5vw,40px) clamp(20px,4vw,30px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+  text-align:center;
 }
 
-.form1-group {
-    text-align: left;
-    margin-bottom: 20px;
-
-    ion-label {
-        display: block;
-        margin-bottom: 8px;
-        margin-left: 5px;
-        font-size: 14px;
-        color: #444;
-        font-weight: 600;
-    }
-
-    .custom-input {
-        --background: #f4f5f7;
-        --color: #333;
-        --placeholder-color: #999;
-        --padding-start: 15px;
-        --padding-end: 15px;
-        border-radius: 12px;
-        height: 50px;
-        font-size: 16px;
-        border: 1px solid #e0e0e0;
-    }
+.register-card h1{
+  margin-top:0;
+  margin-bottom:clamp(20px,4vw,35px);
+  font-size:clamp(24px,6vw,32px);
+  font-weight:800;
+  color:#2c3e50;
 }
 
-.btn-primary {
-    margin-top: 30px;
-    --background: #2563eb;
-    --background-activated: #1d4ed8;
-    --border-radius: 12px;
-    height: 55px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+// FORMULARIO INPUTS
+
+.form1-group{
+  text-align:left;
+  margin-bottom:clamp(14px,3vw,20px);
 }
 
-.links-container {
-    margin-top: 25px;
-
-    .forgot-password {
-        text-decoration: none;
-        color: #2563eb;
-        font-size: 15px;
-        display: block;
-        margin-bottom: 15px;
-    }
-
-    .register-link {
-        font-size: 14px;
-        color: #666;
-
-        span {
-            color: #2563eb;
-            font-weight: 600;
-            cursor: pointer;
-        }
-    }
+.form1-group ion-label{
+  display:block;
+  margin-bottom:8px;
+  margin-left:5px;
+  font-size:clamp(13px,3.5vw,15px);
+  color:#444;
+  font-weight:600;
 }
 
-.select-group {
-    text-align: left;
-    margin-bottom: 20px;
-
-    ion-label {
-        display: block;
-        margin-bottom: 8px;
-        margin-left: 5px;
-        font-size: 14px;
-        color: #444;
-        font-weight: 600;
-    }
-
-    ion-select {
-        --background: #f4f5f7;
-        --color: #333;
-        --placeholder-color: #999;
-        --padding-start: 15px;
-        --padding-end: 15px;
-        border-radius: 12px;
-        height: 50px;
-        font-size: 16px;
-        border: 1px solid #e0e0e0;
-    }
+.form1-group .custom-input{
+  --background:#f4f5f7;
+  --color:#333;
+  --placeholder-color:#999;
+  --padding-start:15px;
+  --padding-end:15px;
+  border-radius:12px;
+  height:clamp(44px,12vw,50px);
+  font-size:clamp(14px,4vw,16px);
+  border:1px solid #e0e0e0;
 }
 
-.checkbox-group {
-    text-align: left;
-    margin: 20px 0 30px 0;
+// SELECT
 
-    ion-checkbox {
-        --size: 20px;
-        margin-right: 12px;
-    }
+.select-group{
+  text-align:left;
+  margin-bottom:clamp(14px,3vw,20px);
+}
 
-    ion-label {
-        font-size: 14px;
-        color: #444;
-        font-weight: 500;
-    }
+.select-group ion-label{
+  display:block;
+  margin-bottom:8px;
+  margin-left:5px;
+  font-size:clamp(13px,3.5vw,15px);
+  color:#444;
+  font-weight:600;
+}
+
+.select-group ion-select{
+  --background:#f4f5f7;
+  --color:#333;
+  --placeholder-color:#999;
+  --padding-start:15px;
+  --padding-end:15px;
+  border-radius:12px;
+  height:clamp(44px,12vw,50px);
+  font-size:clamp(14px,4vw,16px);
+  border:1px solid #e0e0e0;
+}
+
+// CHECKBOX
+
+.checkbox-group{
+  text-align:left;
+  margin:clamp(16px,4vw,20px) 0 clamp(22px,5vw,30px) 0;
+}
+
+.checkbox-group ion-checkbox{
+  --size:20px;
+  margin-right:12px;
+}
+
+.checkbox-group ion-label{
+  font-size:clamp(13px,3.5vw,14px);
+  color:#444;
+  font-weight:500;
+}
+
+// BOTON
+
+.btn-primary{
+  margin-top:clamp(18px,4vw,30px);
+  --background:#2563eb;
+  --background-activated:#1d4ed8;
+  --border-radius:12px;
+  height:clamp(46px,12vw,55px);
+  font-weight:700;
+  letter-spacing:0.5px;
+  box-shadow:0 4px 12px rgba(37,99,235,0.3);
+}
+
+// LINKS
+
+.links-container{
+  margin-top:clamp(18px,4vw,25px);
+}
+
+.forgot-password{
+  text-decoration:none;
+  color:#2563eb;
+  font-size:clamp(13px,3.5vw,15px);
+  display:block;
+  margin-bottom:12px;
+}
+
+.register-link{
+  font-size:clamp(12px,3.5vw,14px);
+  color:#666;
+}
+
+.register-link span{
+  color:#2563eb;
+  font-weight:600;
+  cursor:pointer;
+}
+
+
+// RESPONSIVe
+// DISPOSITIVOS PEQUEÑOS (480px)
+
+@media (max-width:480px){
+
+  .register-card{
+    max-width:95%;
+    padding:20px 16px;
+  }
+
+  .register-card h1{
+    font-size:22px;
+  }
+
+  .form1-group .custom-input,
+  .select-group ion-select{
+    height:44px;
+    font-size:14px;
+  }
+
+  .btn-primary{
+    height:46px;
+  }
+
+}
+
+
+// DISPOSITIVOS MEDIANOS (481px - 768px)
+
+@media (min-width:481px) and (max-width:768px){
+
+  .register-card{
+    max-width:420px;
+    padding:26px 22px;
+  }
+
+  .register-card h1{
+    font-size:26px;
+  }
+
+  .form1-group .custom-input,
+  .select-group ion-select{
+    height:48px;
+  }
+
+}
+
+
+// DISPOSITIVOS GRANDES (769px en adelante)
+
+@media (min-width:769px){
+
+  .register-card{
+    max-width:440px;
+    padding:32px 28px;
+  }
+
+  .register-card h1{
+    font-size:30px;
+  }
+
 }
