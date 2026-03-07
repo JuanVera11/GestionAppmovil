@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, filter, firstValueFrom } from 'rxjs';
 
-type SqlValue = string | number | null;
-
 export interface UsuarioRecord {
-  id: number;
+  id?: number;
   nombre: string;
   apellido: string;
   correo: string;
   contrasena: string;
+  foto?: string;
 }
 
 export interface CategoriaRecord {
@@ -19,7 +18,7 @@ export interface CategoriaRecord {
 }
 
 export interface TransaccionRecord {
-  id: number;
+  id?: number;
   monto: number;
   tipo: 'ingreso' | 'gasto';
   categoria: string;
@@ -35,7 +34,6 @@ export class Database {
   private readonly dbKey = 'control_financiero_db';
   private readonly ready$ = new BehaviorSubject<boolean>(false);
 
-
   readonly defaultCategories: ReadonlyArray<string> = [
     'Ahorro', 'Gastos Hormiga', 'Alimentación', 'Transporte', 'Salud',
   ];
@@ -48,7 +46,7 @@ export class Database {
       const initSqlJs = (mod as any).default ?? (mod as any);
 
       this.SQL = await initSqlJs({
-        locateFile: () => '/assets/sql-wasm.wasm'
+        locateFile: (file: string) => `/assets/${file}`
       });
 
       const saved = localStorage.getItem(this.dbKey);
@@ -73,23 +71,16 @@ export class Database {
     }
   }
 
-
-  // Guarda la BD en localStorage
   private save(): void {
     if (!this.db) return;
     try {
       const data = this.db.export();
-      let binary = '';
-      for (let i = 0; i < data.length; i++) {
-        binary += String.fromCharCode(data[i]);
-      }
-      const base64 = btoa(binary);
-      localStorage.setItem(this.dbKey, base64);
+      const binary = Array.from(data, (byte: any) => String.fromCharCode(byte)).join('');
+      localStorage.setItem(this.dbKey, btoa(binary));
     } catch (e) {
-      console.warn('No se pudo guardar en localStorage:', e);
+      console.warn('Storage error:', e);
     }
   }
-
 
   isReady(): Observable<boolean> {
     return this.ready$.asObservable();
@@ -100,19 +91,21 @@ export class Database {
     await firstValueFrom(this.ready$.pipe(filter(r => r === true)));
   }
 
-  // Ejecuta SQL sin retorno
   run(sql: string, values: any[] = []): any {
-    const stmt = this.db.prepare(sql);
-    stmt.bind(values);
-    stmt.step();
-    stmt.free();
-    this.save();
-    // Obtener el último id insertado
-    const idResult = this.db.exec('SELECT last_insert_rowid() as id;');
-    return idResult[0]?.values[0][0] ?? 0;
+    try {
+      const stmt = this.db.prepare(sql);
+      stmt.bind(values);
+      stmt.step();
+      stmt.free();
+      this.save();
+      const res = this.db.exec('SELECT last_insert_rowid();');
+      return res[0].values[0][0];
+    } catch (e) {
+      console.error('Run error:', e);
+      throw e;
+    }
   }
 
-  // Ejecuta SELECT y retorna filas como array de objetos
   query(sql: string, values: any[] = []): any[] {
     try {
       const result = this.db.exec(sql, values);
@@ -131,42 +124,26 @@ export class Database {
     }
   }
 
-
-  // ─── USUARIOS ────────────────────────────────────────────
-
   async createUsuario(input: UsuarioRecord): Promise<number> {
     const nombre = (input.nombre ?? '').trim();
     const apellido = (input.apellido ?? '').trim();
     if (!nombre) throw new Error('El nombre es obligatorio');
 
-    this.db.run(
+    return this.run(
       'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
       [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
     );
-
-    const result = this.query(
-      'SELECT id FROM usuarios WHERE correo = ?;',
-      [input.correo.trim()]
-    );
-    const id = result[0]?.id ?? 0;
-    this.save();
-    console.log('Usuario creado con id:', id);
-    return Number(id);
   }
 
   async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
     const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
     if (result.length === 0) return false;
-    this.db.run(
+    this.run(
       'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
       [nuevaContrasena.trim(), correo.trim()]
     );
-    this.save();
     return true;
   }
-
-
-
 
   async getUsuarios(): Promise<UsuarioRecord[]> {
     return this.query('SELECT * FROM usuarios ORDER BY nombre ASC;') as UsuarioRecord[];
@@ -180,10 +157,8 @@ export class Database {
     return result.length > 0 ? result[0] as UsuarioRecord : null;
   }
 
-  // ─── CATEGORÍAS ──────────────────────────────────────────
-
   async getCategorias(): Promise<CategoriaRecord[]> {
-    return this.query('SELECT * FROM categorias ORDER BY nombre ASC;') as CategoriaRecord[];
+    return this.query('SELECT * FROM categorias ORDER BY nombre ASC;');
   }
 
   async updateCategoria(input: CategoriaRecord): Promise<boolean> {
@@ -194,15 +169,11 @@ export class Database {
     return true;
   }
 
-  // ─── TRANSACCIONES ───────────────────────────────────────
-
   async createTransaccion(input: TransaccionRecord): Promise<number> {
-    this.run(
+    return this.run(
       'INSERT INTO transacciones (monto, tipo, categoria, fecha, descripcion, idUsuario) VALUES (?, ?, ?, ?, ?, ?);',
       [input.monto, input.tipo, input.categoria, input.fecha, input.descripcion, input.idUsuario]
     );
-    const result = this.query('SELECT last_insert_rowid() as id;');
-    return Number(result[0]?.id ?? 0);
   }
 
   async deleteTransaccion(id: number): Promise<boolean> {
@@ -210,62 +181,69 @@ export class Database {
     return true;
   }
 
-  // ─── SCHEMA ──────────────────────────────────────────────
-
   private async createSchema(): Promise<void> {
     this.db.run('PRAGMA foreign_keys = ON;');
+    
+    // Ejecución por bloques para evitar errores de sintaxis
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        apellido TEXT NOT NULL,
+        correo TEXT NOT NULL UNIQUE,
+        contrasena TEXT NOT NULL,
+        foto TEXT DEFAULT NULL
+      );
+    `);
 
-    this.db.run(`CREATE TABLE IF NOT EXISTS usuarios (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL,
-      apellido TEXT NOT NULL,
-      correo TEXT NOT NULL UNIQUE,
-      contrasena TEXT NOT NULL,
-      foto TEXT DEFAULT NULL
-    );`);
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS categorias (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL UNIQUE,
+        valorAsignado REAL DEFAULT 0,
+        valorGasto REAL DEFAULT 0
+      );
+    `);
 
-    this.db.run(`CREATE TABLE IF NOT EXISTS categorias (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT NOT NULL UNIQUE,
-      valorAsignado REAL DEFAULT 0,
-      valorGasto REAL DEFAULT 0
-    );`);
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS presupuestos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        monto REAL NOT NULL,
+        ingreso REAL DEFAULT 0,
+        gasto REAL DEFAULT 0,
+        mes TEXT NOT NULL,
+        ano INTEGER NOT NULL,
+        estado TEXT,
+        idUsuarioFk INTEGER NOT NULL
+      );
+    `);
 
-    this.db.run(`CREATE TABLE IF NOT EXISTS presupuestos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      monto REAL NOT NULL,
-      ingreso REAL DEFAULT 0,
-      gasto REAL DEFAULT 0,
-      mes TEXT NOT NULL,
-      ano INTEGER NOT NULL,
-      estado TEXT,
-      idUsuarioFk INTEGER NOT NULL
-    );`);
+    this.db.run(`
+      CREATE TABLE IF NOT EXISTS transacciones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        monto REAL NOT NULL,
+        tipo TEXT,
+        categoria TEXT,
+        fecha TEXT NOT NULL,
+        descripcion TEXT,
+        idUsuario INTEGER NOT NULL
+      );
+    `);
 
-    this.db.run(`CREATE TABLE IF NOT EXISTS transacciones (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      monto REAL NOT NULL,
-      tipo TEXT,
-      categoria TEXT,
-      fecha TEXT NOT NULL,
-      descripcion TEXT,
-      idUsuario INTEGER NOT NULL
-    );`);
+    // Intento de migración silenciosa para la columna foto
     try {
       this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
-    } catch (e) { }
+    } catch (e) { 
+      // Si la columna ya existe, fallará silenciosamente
+    }
   }
 
   private async seedBaseData(): Promise<void> {
-    const result = this.query('SELECT COUNT(*) as total FROM categorias;');
-    if (Number(result[0]?.total) > 0) return;
+    const res = this.query('SELECT COUNT(*) as total FROM categorias;');
+    if (Number(res[0]?.total) > 0) return;
 
     for (const cat of this.defaultCategories) {
-      this.db.run(
-        'INSERT INTO categorias (nombre, valorAsignado, valorGasto) VALUES (?, ?, ?);',
-        [cat, 0, 0]
-      );
+      this.run('INSERT INTO categorias (nombre, valorAsignado, valorGasto) VALUES (?, ?, ?);', [cat, 0, 0]);
     }
-    console.log('✅ Categorías base creadas');
   }
 }

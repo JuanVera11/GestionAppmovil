@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AlertController } from '@ionic/angular';
 import { Database } from '../../services/database';
 
 @Component({
@@ -12,7 +11,7 @@ import { Database } from '../../services/database';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, RouterModule],
 })
 export class RegisterPage {
   fullName: string = '';
@@ -31,10 +30,9 @@ export class RegisterPage {
   ) { }
 
   async register() {
-    console.log('Register iniciado:', { fullName: this.fullName, email: this.email });
-
-    if (!this.fullName || !this.email || !this.pass || !this.termsAccepted) {
-      this.errorMsg = 'Completa todos los campos';
+    // 1. Validación inicial
+    if (!this.fullName.trim() || !this.email.trim() || !this.pass.trim() || !this.termsAccepted) {
+      this.errorMsg = 'Completa todos los campos y acepta los términos';
       return;
     }
 
@@ -42,23 +40,28 @@ export class RegisterPage {
     this.errorMsg = '';
 
     try {
-      const [nombre, apellido] = this.fullName.trim().split(' ', 2);
+      // Separar nombre y apellido de forma segura
+      const nameParts = this.fullName.trim().split(' ');
+      const nombre = nameParts[0];
+      const apellido = nameParts.slice(1).join(' ') || '';
 
+      // Esperar a que la base de datos esté lista
       await this.database.waitForReady();
-      console.log('Database lista');
 
       await this.authService.register(
-        nombre || this.fullName,
-        apellido || '',
+        nombre,
+        apellido,
         this.email,
         this.pass
       );
 
       await this.showAlert('Éxito', '¡Cuenta creada! Inicia sesión.');
       this.router.navigate(['/login']);
-    }
+    } 
     catch (error: any) {
       console.error('Error completo register:', error);
+      
+      // Manejo de errores específicos
       if (error.message?.includes('UNIQUE constraint failed')) {
         this.errorMsg = 'Este correo ya está registrado';
       } else {
@@ -68,7 +71,6 @@ export class RegisterPage {
       this.loading = false;
     }
   }
-
 
   private async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({

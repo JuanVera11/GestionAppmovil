@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Database } from './database';
 
 export interface UsuarioRecord {
-    id: number;
+    id?: number; // El id es opcional porque no existe antes de insertar en la BD
     nombre: string;
     apellido: string;
     correo: string;
@@ -18,7 +18,9 @@ export class AuthService {
     async login(correo: string, contrasena: string): Promise<any> {
         await this.db.waitForReady();
         const user = await this.db.loginUsuario(correo, contrasena);
-        if (user) {
+        
+        // Verificación segura de la existencia del usuario e id
+        if (user && user.id !== undefined) {
             localStorage.setItem('userId', user.id.toString());
             localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
         }
@@ -27,21 +29,21 @@ export class AuthService {
 
     async register(nombre: string, apellido: string, correo: string, contrasena: string): Promise<number> {
         await this.db.waitForReady();
-        return await this.db.createUsuario({ id: 0, nombre, apellido, correo, contrasena });
+        // Se elimina 'id: 0', la BD se encarga del Autoincrement
+        return await this.db.createUsuario({ nombre, apellido, correo, contrasena });
     }
-
-
 
     async getCurrentUser(): Promise<any> {
         const value = localStorage.getItem('userId');
         if (!value) return null;
 
-        // query() ya retorna array de objetos directamente
+        await this.db.waitForReady();
         const result = this.db.query(
             'SELECT * FROM usuarios WHERE id = ?;',
             [parseInt(value)]
         );
-        return result[0] ?? null;
+        
+        return result.length > 0 ? result[0] : null;
     }
 
     async logout(): Promise<void> {
@@ -58,5 +60,4 @@ export class AuthService {
         await this.db.waitForReady();
         return await this.db.updateContrasena(correo, nuevaContrasena);
     }
-
 }
