@@ -52,7 +52,7 @@ export class DashboardPage {
   }
 
   rapidoAccess = [
-    { icon: 'add-circle', title: 'Nueva Transacción', route: '/transaccion' },
+    { icon: 'add-circle', title: 'Configuración', route: '/configuracion' },
     { icon: 'stats-chart', title: 'Reportes', route: '/reporte' },
     { icon: 'card', title: 'Presupuestos', route: '/presupuesto' },
     { icon: 'grid', title: 'Categorías', route: '/categoria' }
