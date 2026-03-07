@@ -20,6 +20,7 @@ ion-menu ion-content::part(scroll) {
   text-align: center;
   margin-bottom: 40px;
 
+
   ion-avatar {
     width: 80px;
     height: 80px;
@@ -87,9 +88,6 @@ ion-list {
     display: none;
   }
 
-  ion-router-outlet {
-    display: none;
-  }
 }
 
 @media (max-height: 600px) {
