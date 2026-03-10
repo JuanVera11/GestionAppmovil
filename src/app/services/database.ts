@@ -65,7 +65,6 @@ export class Database {
       await this.seedBaseData();
       this.save();
       this.ready$.next(true);
-      console.log('Base de datos lista');
     } catch (error) {
       console.error('Error inicializando BD:', error);
       throw error;

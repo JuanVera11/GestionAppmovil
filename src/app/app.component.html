@@ -1,28 +1,39 @@
 <ion-app>
-  <ion-split-pane contentId="main-content" [when]="isLoggedIn">
+  <ion-split-pane contentId="main-content" [disabled]="!isLoggedIn || !isMenuVisible">
+    
     <ion-menu contentId="main-content" type="overlay">
       <ion-content class="ion-padding-top">
+        
         <div class="menu-header">
+          <div class="header-top-actions">
+            <ion-button fill="clear" (click)="toggleMenu()" class="close-btn">
+              <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+            </ion-button>
+          </div>
+
           <ion-avatar>
             <img [src]="userPhoto" alt="User" />
           </ion-avatar>
+          
           <div class="header-text">
             <ion-label class="user-name">{{ userName }}</ion-label>
             <p>App de Finanzas</p>
           </div>
         </div>
+
         <ion-list id="inbox-list" lines="none">
-          @for (p of appPages; track p) {
+          @for (p of appPages; track p.title) {
           <ion-menu-toggle auto-hide="false">
             <ion-item routerDirection="root" [routerLink]="[p.url]" (click)="onPageClick(p.url)" detail="false"
               routerLinkActive="selected" class="menu-item">
-              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
+              <ion-icon aria-hidden="true" slot="start" [name]="p.icon"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
           }
+
           <ion-menu-toggle auto-hide="false">
-            <ion-item (click)="onLogout()" detail="false" class="menu-item">
+            <ion-item (click)="onLogout()" detail="false" class="menu-item logout-item">
               <ion-icon name="log-out-outline" slot="start"></ion-icon>
               <ion-label>Cerrar Sesión</ion-label>
             </ion-item>
@@ -30,6 +41,15 @@
         </ion-list>
       </ion-content>
     </ion-menu>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
+
+    <div class="ion-page" id="main-content">
+      @if (isLoggedIn && !isMenuVisible) {
+        <ion-button fill="clear" (click)="toggleMenu()" class="open-menu-btn">
+          <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+        </ion-button>
+      }
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+
   </ion-split-pane>
 </ion-app>

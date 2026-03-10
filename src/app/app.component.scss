@@ -1,98 +1,146 @@
+//  Reset y comportamiento del Split Pane
+ion-split-pane {
+  // Esto obliga a que el split-pane se comporte como escritorio 
+  // incluso en pantallas más pequeñas si así lo deseas
+  --side-min-width: 300px;
+  --side-max-width: 320px;
+}
+
+// Menú Lateral 
 ion-menu {
-  --width: 320px;
+  --width: 310px;
+  --border: none;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+
+  ion-content {
+    --background: #000000; // Negro total solicitado
+    
+    &::part(scroll) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 15px;
+    }
+  }
 }
 
-ion-menu ion-content {
-  --background: #000000;
-}
-
-ion-menu ion-content::part(scroll) {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
+// Cabecera del Menú
 .menu-header {
+  width: 100%;
+  padding: 0 15px 30px 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 40px;
 
-
-  ion-avatar {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 15px;
-    border: 3px solid var(--ion-color-primary);
+  .header-top-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    
+    .close-btn {
+      --color: #ffffff;
+      --opacity: 0.5;
+      margin: 0;
+      &:hover { --opacity: 1; }
+    }
   }
 
-  .header-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  ion-avatar {
+    width: 90px;
+    height: 90px;
+    margin: 10px 0 15px 0;
+    border: 3px solid #6366f1;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    
+    img {
+      object-fit: cover;
+    }
   }
 
   .user-name {
     font-weight: 800;
     font-size: 1.4rem;
     color: #ffffff;
+    letter-spacing: -0.5px;
   }
 
   p {
-    color: var(--ion-color-step-500);
-    margin-top: 5px;
+    color: #818cf8; 
+    font-size: 0.9rem;
+    margin: 4px 0 0 0;
+    font-weight: 500;
+    opacity: 0.9;
   }
 }
 
+// Lista de Navegación
 ion-list {
   width: 100%;
-  max-width: 320px;
-  padding: 0;
-  background: transparent;
+  background: transparent !important;
+  padding: 0 10px;
 }
 
 .menu-item {
   --background: transparent;
-  --color: #ffffff;
-  --border-radius: 15px;
-  margin-bottom: 8px;
+  --color: #a1a1aa; // Gris claro para items no seleccionados
+  --border-radius: 12px;
+  margin-bottom: 6px;
   font-weight: 500;
+  --padding-start: 16px;
+  transition: all 0.2s ease-in-out;
 
   ion-icon {
     font-size: 1.5rem;
-    color: var(--ion-color-step-400);
+    color: #a1a1aa;
   }
 
   &.selected {
-    --background: rgba(var(--ion-color-primary-rgb), 0.2);
-    --color: var(--ion-color-primary);
-
+    --background: rgba(99, 102, 241, 0.15); 
+    --color: #ffffff; 
+    
     ion-icon {
-      color: var(--ion-color-primary);
+      color: #6366f1; 
     }
   }
+
+  &:active {
+    --background: rgba(255, 255, 255, 0.05);
+  }
 }
 
-@media (max-width: 768px) {
-  ion-split-pane {
-    --side-width: 100%;
-  }
+#main-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
 
+  // Botón para abrir categorias
+  .open-menu-btn {
+    position: fixed; // Fixed para que no se mueva con el scroll
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    --background: #1e1e1e;
+    --color: #ffffff;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    height: 45px;
+    width: 45px;
+    margin: 0;
+  }
+}
+
+// FIX CRÍTICO PARA INSPECCIONADOR / MÓVIL
+@media (max-width: 991px) {
   ion-menu {
-    display: block;
+    display: block !important; 
   }
-
-  ion-menu::part(backdrop) {
-    display: none;
-  }
-
-}
-
-@media (max-height: 600px) {
-  ion-menu ion-content::part(scroll) {
-    justify-content: flex-start;
-    padding-top: 40px;
+  
+  // Asegura que cuando el menú esté deshabilitado, el contenido ocupe todo
+  ion-split-pane[disabled="true"] #main-content {
+    min-width: 100vw;
   }
 }
