@@ -74,19 +74,8 @@ ion-list {
   }
 }
 
-@media (max-width: 768px) {
-  ion-split-pane {
-    --side-width: 100%;
-  }
-
-  ion-menu {
-    display: block;
-  }
-
-  ion-menu::part(backdrop) {
-    display: none;
-  }
-
+ion-menu::part(backdrop) {
+  display: none;
 }
 
 @media (max-height: 600px) {
