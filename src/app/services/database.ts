@@ -15,6 +15,7 @@ export interface CategoriaRecord {
   nombre: string;
   valorAsignado: number;
   valorGasto: number;
+  idUsuario?: number;
 }
 
 export interface TransaccionRecord {
@@ -34,19 +35,15 @@ export class Database {
   private readonly dbKey = 'control_financiero_db';
   private readonly ready$ = new BehaviorSubject<boolean>(false);
 
-  readonly defaultCategories: ReadonlyArray<string> = [
-    'Ahorro', 'Gastos Hormiga', 'Alimentación', 'Transporte', 'Salud',
-  ];
+  readonly defaultCategories: ReadonlyArray<string> = [];
 
   async initializeDatabase(): Promise<void> {
     if (this.ready$.value) return;
-
     try {
       const mod = await import('sql.js');
       const initSqlJs = (mod as any).default ?? (mod as any);
-
       this.SQL = await initSqlJs({
-        locateFile: (file: string) => `/assets/${file}`
+        locateFile: () => 'assets/sql-wasm.wasm'
       });
 
       const saved = localStorage.getItem(this.dbKey);
@@ -65,6 +62,7 @@ export class Database {
       await this.seedBaseData();
       this.save();
       this.ready$.next(true);
+      console.log('Base de datos lista');
     } catch (error) {
       console.error('Error inicializando BD:', error);
       throw error;
@@ -75,7 +73,8 @@ export class Database {
     if (!this.db) return;
     try {
       const data = this.db.export();
-      const binary = Array.from(data, (byte: any) => String.fromCharCode(byte)).join('');
+      let binary = '';
+      for (let i = 0; i < data.length; i++) binary += String.fromCharCode(data[i]);
       localStorage.setItem(this.dbKey, btoa(binary));
     } catch (e) {
       console.warn('Storage error:', e);
@@ -128,7 +127,6 @@ export class Database {
     const nombre = (input.nombre ?? '').trim();
     const apellido = (input.apellido ?? '').trim();
     if (!nombre) throw new Error('El nombre es obligatorio');
-
     return this.run(
       'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
       [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
@@ -157,17 +155,21 @@ export class Database {
     return result.length > 0 ? result[0] as UsuarioRecord : null;
   }
 
-  async getCategorias(): Promise<CategoriaRecord[]> {
-    return this.query('SELECT * FROM categorias ORDER BY nombre ASC;');
-  }
+  async getCategorias(idUsuario: number): Promise<CategoriaRecord[]> {
+  return this.query(
+    'SELECT * FROM categorias WHERE idUsuario = ? ORDER BY nombre ASC;',
+    [idUsuario]
+  );
+}
 
-  async updateCategoria(input: CategoriaRecord): Promise<boolean> {
-    this.run(
-      'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ?;',
-      [input.valorAsignado, input.valorGasto, input.id]
-    );
-    return true;
-  }
+async updateCategoria(input: CategoriaRecord): Promise<boolean> {
+  this.run(
+    'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ? AND idUsuario = ?;',
+    [input.valorAsignado, input.valorGasto, input.id, input.idUsuario]
+  );
+  return true;
+}
+
 
   async createTransaccion(input: TransaccionRecord): Promise<number> {
     return this.run(
@@ -183,67 +185,56 @@ export class Database {
 
   private async createSchema(): Promise<void> {
     this.db.run('PRAGMA foreign_keys = ON;');
-    
-    // Ejecución por bloques para evitar errores de sintaxis
-    this.db.run(`
-      CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL,
-        apellido TEXT NOT NULL,
-        correo TEXT NOT NULL UNIQUE,
-        contrasena TEXT NOT NULL,
-        foto TEXT DEFAULT NULL
-      );
-    `);
 
-    this.db.run(`
-      CREATE TABLE IF NOT EXISTS categorias (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL UNIQUE,
-        valorAsignado REAL DEFAULT 0,
-        valorGasto REAL DEFAULT 0
-      );
-    `);
+    this.db.run(`CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT NOT NULL,
+      apellido TEXT NOT NULL,
+      correo TEXT NOT NULL UNIQUE,
+      contrasena TEXT NOT NULL,
+      foto TEXT DEFAULT NULL
+    );`);
 
-    this.db.run(`
-      CREATE TABLE IF NOT EXISTS presupuestos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        monto REAL NOT NULL,
-        ingreso REAL DEFAULT 0,
-        gasto REAL DEFAULT 0,
-        mes TEXT NOT NULL,
-        ano INTEGER NOT NULL,
-        estado TEXT,
-        idUsuarioFk INTEGER NOT NULL
-      );
-    `);
+    this.db.run(`CREATE TABLE IF NOT EXISTS categorias (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nombre TEXT NOT NULL,
+  valorAsignado REAL DEFAULT 0,
+  valorGasto REAL DEFAULT 0,
+  idUsuario INTEGER DEFAULT NULL
+);`);
 
-    this.db.run(`
-      CREATE TABLE IF NOT EXISTS transacciones (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        monto REAL NOT NULL,
-        tipo TEXT,
-        categoria TEXT,
-        fecha TEXT NOT NULL,
-        descripcion TEXT,
-        idUsuario INTEGER NOT NULL
-      );
-    `);
+    this.db.run(`CREATE TABLE IF NOT EXISTS presupuestos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      monto REAL NOT NULL,
+      ingreso REAL DEFAULT 0,
+      gasto REAL DEFAULT 0,
+      mes TEXT NOT NULL,
+      ano INTEGER NOT NULL,
+      estado TEXT,
+      idUsuarioFk INTEGER NOT NULL
+    );`);
 
-    // Intento de migración silenciosa para la columna foto
+    this.db.run(`CREATE TABLE IF NOT EXISTS transacciones (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      monto REAL NOT NULL,
+      tipo TEXT,
+      categoria TEXT,
+      fecha TEXT NOT NULL,
+      descripcion TEXT,
+      idUsuario INTEGER NOT NULL
+    );`);
+
     try {
       this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
-    } catch (e) { 
-      // Si la columna ya existe, fallará silenciosamente
-    }
+    } catch (e) { }
+    try {
+  this.db.run('ALTER TABLE categorias ADD COLUMN idUsuario INTEGER DEFAULT NULL;');
+} catch (e) {}
+
   }
+  
 
   private async seedBaseData(): Promise<void> {
-    const res = this.query('SELECT COUNT(*) as total FROM categorias;');
-    if (Number(res[0]?.total) > 0) return;
 
-    for (const cat of this.defaultCategories) {
-      this.run('INSERT INTO categorias (nombre, valorAsignado, valorGasto) VALUES (?, ?, ?);', [cat, 0, 0]);
-    }
   }
 }

@@ -143,3 +143,15 @@ ion-list {
     min-width: 100vw;
   }
 }
+
+ion-menu::part(backdrop) {
+  display: none;
+}
+
+@media (max-height: 600px) {
+  ion-menu ion-content::part(scroll) {
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+}
+

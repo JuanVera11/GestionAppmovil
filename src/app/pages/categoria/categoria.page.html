@@ -10,26 +10,35 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="white-bg">
-  <ion-list lines="full" class="ion-no-padding">
+
+  <!-- Estado vacío -->
+  <div *ngIf="categorias.length === 0" class="empty-state">
+    <ion-icon name="pricetags-outline"></ion-icon>
+    <p>No tienes categorías aún</p>
+    <ion-button fill="outline" (click)="abrirFormulario()">Crear categoría</ion-button>
+  </div>
+
+  <!-- Lista de categorías -->
+  <ion-list *ngIf="categorias.length > 0" lines="full" class="ion-no-padding">
     <ion-item-sliding *ngFor="let cat of categorias">
       <ion-item (click)="abrirFormulario(cat)" class="category-item">
-        
         <div slot="start" class="icon-circle">
-          <ion-icon [name]="cat.icono"></ion-icon>
+          <ion-icon name="pricetags-outline"></ion-icon>
         </div>
 
         <ion-label>
           <div class="row-header">
             <h2 class="cat-name">{{ cat.nombre }}</h2>
             <div class="bar-container">
-              <ion-progress-bar 
-                [color]="getColor(cat)" 
+              <ion-progress-bar
+                [color]="getColor(cat)"
                 [value]="getProgreso(cat)">
               </ion-progress-bar>
             </div>
           </div>
           <p class="cat-info">
-            ${{ formatMoney(cat.asignado) }} Asignado • ${{ formatMoney(cat.gastado) }} Gastado
+            ${{ formatMoney(cat.valorAsignado) }} Asignado •
+            ${{ formatMoney(cat.valorGasto) }} Gastado
           </p>
         </ion-label>
 
@@ -49,3 +58,5 @@
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+</ion-content>

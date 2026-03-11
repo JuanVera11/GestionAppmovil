@@ -36,7 +36,7 @@
               },
               {
                 "glob": "sql-wasm.wasm",
-                "input": "node_modules/jeep-sqlite/dist/assets",
+                "input": "node_modules/sql.js/dist",
                 "output": "assets"
               }
             ],
