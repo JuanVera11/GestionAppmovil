@@ -34,7 +34,8 @@ export class PresupuestoPage implements OnInit {
   constructor(
     private alertCtrl: AlertController,
     private actionSheetCtrl: ActionSheetController,
-    private zone: NgZone // Inyectamos NgZone para actualización instantánea
+     // Inyectamos NgZone para actualización instantánea
+    private zone: NgZone
   ) {
     addIcons({ 
       add, trashOutline, pencilOutline, cashOutline, 
@@ -51,11 +52,11 @@ export class PresupuestoPage implements OnInit {
     this.cargarDatos();
   }
 
-  cargarDatos() {
-    const p = localStorage.getItem('mis_presupuestos');
-    const t = localStorage.getItem('mis_transacciones');
-    this.presupuestos = p ? JSON.parse(p) : [];
-    this.transacciones = t ? JSON.parse(t) : [];
+ cargarDatos() {
+    const presupuestosStorage = localStorage.getItem('mis_presupuestos');
+    const transaccionesStorage = localStorage.getItem('mis_transacciones');
+    this.presupuestos = presupuestosStorage ? JSON.parse(presupuestosStorage) : [];
+    this.transacciones = transaccionesStorage ? JSON.parse(transaccionesStorage) : [];
   }
 
   guardar() {
@@ -63,12 +64,14 @@ export class PresupuestoPage implements OnInit {
     localStorage.setItem('mis_transacciones', JSON.stringify(this.transacciones));
     
     // Forzamos a Angular a actualizar la vista dentro de su zona
+    // vista con datos tanto string como numericamente
+    // Transacción ( nombre) - Gasto o ingreso ( valor)
     this.zone.run(() => {
       this.cargarDatos();
     });
   }
 
-  // --- GESTIÓN DE PRESUPUESTOS ---
+  //  GESTIÓN DE PRESUPUESTOS 
   async gestionarPresupuesto(item?: any, index?: number) {
     const alert = await this.alertCtrl.create({
       header: item ? 'Editar Presupuesto' : 'Nuevo Presupuesto',
@@ -105,7 +108,7 @@ export class PresupuestoPage implements OnInit {
     await alert.present();
   }
 
-  // --- FLUJO DE TRANSACCIONES (PREGUNTA PRIMERO) ---
+  // FLUJO DE TRANSACCIONES (PREGUNTA PRIMERO) 
   async seleccionarTipoTransaccion() {
     const actionSheet = await this.actionSheetCtrl.create({
       header: '¿Qué tipo de transacción es?',
