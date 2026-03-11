@@ -1,44 +1,66 @@
-.bg-white {
-  --background: #ffffff;
+ion-content {
+  --background: #f8fafc; // Un gris azulado muy claro para resaltar las tarjetas
 }
 
-ion-toolbar {
-  --background: #ffffff;
-  --color: #000;
+.main-wrapper {
+  max-width: 1200px;
+  margin: 0 auto; // Centra el contenido en pantallas grandes
 }
 
-.main-title {
-  padding: 10px 16px;
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin: 0;
+.modern-card {
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  background: white;
+  margin: 10px;
+
+  .p-name { font-weight: 800; font-size: 1.1rem; color: #1e293b; }
+  .p-info { 
+    margin: 10px 0;
+    .p-spent { font-size: 1.2rem; font-weight: 700; color: #4338ca; }
+    .p-total { color: #94a3b8; font-size: 0.85rem; }
+  }
+  ion-progress-bar { height: 8px; border-radius: 10px; }
 }
 
-.budget-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
-  border: 1px solid #f0f0f0; 
-  margin: 4px;
+.transactions-container {
+  background: white;
+  margin-top: 30px;
+  border-radius: 40px 40px 0 0;
+  padding: 20px;
+  box-shadow: 0 -10px 30px rgba(148, 19, 19, 0.03);
 
-  .price-box {
-    margin: 8px 0;
-    .spent-amount { font-size: 1.2rem; font-weight: 700; }
-    .total-amount { color: #888; font-size: 0.8rem; }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    h3 { font-weight: 800; color: #1e293b; }
   }
 }
 
-.transactions-section {
-  background: #ffffff;
-  margin-top: 10px;
+.t-item {
+  --background: #fdfdfd;
+  margin-bottom: 8px;
+  border-radius: 15px;
+  --inner-padding-end: 15px;
+
+  .t-icon {
+    background: #f1f5f9;
+    width: 45px;
+    height: 45px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon { font-size: 1.4rem; color: #4338ca; }
+    &.income { background: #dcfce7; ion-icon { color: #16a34a; } }
+  }
 }
 
-.icon-circle {
-  background: #f7f7f7;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.empty-state {
+  width: 100%;
+  text-align: center;
+  padding: 50px 20px;
+  color: #94a3b8;
+  ion-icon { font-size: 4rem; margin-bottom: 10px; opacity: 0.5; }
 }

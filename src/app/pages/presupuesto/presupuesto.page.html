@@ -1,62 +1,85 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar color="white">
+  <ion-toolbar>
     <ion-title>Mi Presupuesto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="gestionarPresupuesto()" color="primary">
+        <ion-icon name="add" slot="start"></ion-icon>
+        NUEVO
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="bg-white">
-  
-  <h2 class="main-title">Progreso</h2>
+<ion-content>
+  <div class="main-wrapper">
+    
+    <ion-grid>
+      <ion-row>
+        @for (p of presupuestos; track $index; let i = $index) {
+          <ion-col size="12" size-md="6">
+            <ion-card class="modern-card">
+              <ion-item lines="none" class="card-header">
+                <ion-icon name="wallet-outline" slot="start" color="primary"></ion-icon>
+                <ion-buttons slot="end">
+                  <ion-button (click)="gestionarPresupuesto(p, i)">
+                    <ion-icon name="pencil-outline" slot="icon-only" size="small"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="eliminarPresupuesto(i)" color="danger">
+                    <ion-icon name="trash-outline" slot="icon-only" size="small"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
 
-  <ion-grid>
-    <ion-row>
-      @for (cat of presupuestos; track cat.nombre) {
-        <ion-col size="6">
-          <ion-card class="budget-card">
-            <ion-item lines="none">
-              <ion-icon [name]="cat.icon" slot="start"></ion-icon>
-              <ion-icon 
-                [name]="cat.gastado > cat.total ? 'alert-circle-outline' : 'checkmark-circle-outline'" 
-                [color]="cat.gastado > cat.total ? 'danger' : 'primary'"
-                slot="end">
-              </ion-icon>
-            </ion-item>
-            <ion-card-content>
-              <p class="category-name">{{cat.nombre}}</p>
-              <div class="price-box">
-                <span class="spent-amount">${{cat.gastado}}</span>
-                <span class="total-amount"> de ${{cat.total}}</span>
+              <ion-card-content (click)="gestionarPresupuesto(p, i)">
+                <h2 class="p-name">{{p.nombre}}</h2>
+                <div class="p-info">
+                  <span class="p-spent">${{p.gastado | number}}</span>
+                  <span class="p-total"> de ${{p.total | number}}</span>
+                </div>
+                <ion-progress-bar [value]="p.gastado / p.total"></ion-progress-bar>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        } @empty {
+          <div class="empty-state">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <p>No tienes presupuestos creados.</p>
+          </div>
+        }
+      </ion-row>
+    </ion-grid>
+
+    <div class="transactions-container">
+      <h3>Transacciones</h3>
+      <ion-list lines="none">
+        @for (t of transacciones; track $index; let i = $index) {
+          <ion-item-sliding>
+            <ion-item class="t-item" button (click)="gestionarTransaccion(t, i)">
+              <div class="t-icon" slot="start">
+                <ion-icon [name]="t.icon"></ion-icon>
               </div>
-              <ion-progress-bar [value]="cat.gastado / cat.total"></ion-progress-bar>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      }
-    </ion-row>
-  </ion-grid>
-
-  <div class="transactions-section">
-    <h2 class="main-title">Recientes</h2>
-    <ion-list lines="full">
-      @for (t of transacciones; track t.comercio) {
-        <ion-item>
-          <ion-avatar slot="start">
-            <div class="icon-circle"><ion-icon [name]="t.icon"></ion-icon></div>
-          </ion-avatar>
-          <ion-label>
-            <h3>{{t.comercio}}</h3>
-            <p>{{t.categoria}}</p>
-          </ion-label>
-          <ion-note slot="end" class="amount">{{t.monto | currency}}</ion-note>
-        </ion-item>
-      }
-    </ion-list>
+              <ion-label>
+                <h3>{{t.comercio}}</h3>
+                <p>{{t.categoria}}</p>
+              </ion-label>
+              <ion-note slot="end" [color]="t.monto > 0 ? 'success' : 'dark'">
+                {{t.monto | currency:'USD':'symbol':'1.0-0'}}
+              </ion-note>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="eliminarTransaccion(i)">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
+    </div>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="crearPresupuesto()">
+    <ion-fab-button (click)="gestionarTransaccion()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 </ion-content>
