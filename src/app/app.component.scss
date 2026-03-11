@@ -1,7 +1,6 @@
 //  Reset y comportamiento del Split Pane
 ion-split-pane {
   // Esto obliga a que el split-pane se comporte como escritorio 
-  // incluso en pantallas más pequeñas si así lo deseas
   --side-min-width: 300px;
   --side-max-width: 320px;
 }
@@ -13,7 +12,7 @@ ion-menu {
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
 
   ion-content {
-    --background: #000000; // Negro total solicitado
+    --background: #000000; 
     
     &::part(scroll) {
       display: flex;
@@ -83,7 +82,7 @@ ion-list {
 
 .menu-item {
   --background: transparent;
-  --color: #a1a1aa; // Gris claro para items no seleccionados
+  --color: #a1a1aa; 
   --border-radius: 12px;
   margin-bottom: 6px;
   font-weight: 500;
@@ -133,7 +132,7 @@ ion-list {
   }
 }
 
-// FIX CRÍTICO PARA INSPECCIONADOR / MÓVIL
+// FIX  PARA INSPECCIONADOR / MÓVIL
 @media (max-width: 991px) {
   ion-menu {
     display: block !important; 

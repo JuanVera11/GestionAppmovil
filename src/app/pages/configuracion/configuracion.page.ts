@@ -18,8 +18,11 @@ import { Database } from 'src/app/services/database';
   imports: [CommonModule, FormsModule, IonContent, IonInput, IonLabel, IonButton, IonIcon]
 })
 export class ConfiguracionPage implements OnInit {
+  // Parametros que reciben datos en configuración
+  // Y son datos de usuario edtiables
   userName: string = '';
   userEmail: string = '';
+  // Foto de usuario, editable
   profileImage: string = 'assets/default-avatar.png';
 
   editNombre: string = '';
@@ -60,6 +63,8 @@ export class ConfiguracionPage implements OnInit {
   }
 
   async guardarCambios() {
+    // Si esta vacio no va a recibir datos ni cambios
+    // Debe tener caracteres
     if (!this.editNombre.trim()) {
       const alert = await this.alertController.create({
         header: 'Error', message: 'El nombre no puede estar vacío.',
