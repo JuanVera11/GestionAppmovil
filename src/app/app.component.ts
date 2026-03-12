@@ -1,15 +1,16 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { 
-  IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, 
-  IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink, 
-  IonAvatar, IonListHeader, IonNote, Platform, AlertController, IonButton 
+import {
+  IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle,
+  IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink,
+  IonAvatar, IonListHeader, IonNote, Platform, AlertController, IonButton
 } from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
 import { Database } from './services/database';
 import { addIcons } from 'ionicons';
+import { NgIf } from '@angular/common';
 import {
   pieChartOutline,
   cogOutline,
@@ -32,6 +33,7 @@ import { Page } from './models/page';
     RouterModule,
     RouterLink,
     RouterLinkActive,
+    NgIf,
     IonApp,
     IonSplitPane,
     IonMenu,
@@ -48,8 +50,10 @@ import { Page } from './models/page';
     IonNote,
     IonButton
   ],
+
 })
 export class AppComponent implements OnInit {
+
   public appPages = [
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
@@ -91,7 +95,7 @@ export class AppComponent implements OnInit {
     await this.loadUserData();
     await this.checkLoginStatus();
 
-    this.router.events.subscribe(async() => {
+    this.router.events.subscribe(async () => {
       await this.loadUserData();
       this.checkLoginStatus();
     });
