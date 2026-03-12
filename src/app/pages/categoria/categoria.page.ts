@@ -49,7 +49,7 @@ export class CategoriaPage implements OnInit {
 
   async obtenerUsuario() {
     const user = await this.authService.getCurrentUser();
-    if (user) {
+    if (user && user.id) {
       this.userId = user.id;
     }
   }
@@ -78,12 +78,12 @@ export class CategoriaPage implements OnInit {
 
   async abrirFormulario(categoria?: CategoriaRecord) {
     const botones: any[] = [
-      { text: 'Cancelar', role: 'cancel' }
+      { text: 'CANCELAR', role: 'cancel' }
     ];
 
     if (categoria) {
       botones.push({
-        text: 'Eliminar',
+        text: 'ELIMINAR',
         cssClass: 'alert-button-delete',
         handler: () => {
           this.eliminar(categoria.id);
@@ -92,24 +92,29 @@ export class CategoriaPage implements OnInit {
     }
 
     botones.push({
-      text: 'Guardar',
+      text: 'GUARDAR',
       handler: async (data: any) => {
         const nombre = (data.nombre || '').trim();
-        const valorAsignado = Number(data.asignado) || 0;
-        const valorGasto = Number(data.gasto) || 0;
+        const valorAsignado = data.asignado !== '' ? Number(data.asignado) : 0;
+        const valorGasto = data.gasto !== '' ? Number(data.gasto) : 0;
 
         if (!nombre) {
           this.presentToast('El nombre es obligatorio', 'warning');
           return false;
         }
 
+        if (this.userId <= 0) {
+          this.presentToast('Error: Usuario no identificado', 'danger');
+          return false;
+        }
+
         try {
           if (categoria) {
             await this.db.updateCategoria({
-              ...categoria,
-              nombre,
-              valorAsignado,
-              valorGasto,
+              id: categoria.id,
+              nombre: nombre,
+              valorAsignado: valorAsignado,
+              valorGasto: valorGasto,
               idUsuario: this.userId
             });
           } else {
@@ -124,32 +129,31 @@ export class CategoriaPage implements OnInit {
           return true;
         } catch (error) {
           console.error('Error al guardar:', error);
-          this.presentToast('Error al guardar los datos', 'danger');
+          this.presentToast('Error al guardar en la base de datos', 'danger');
           return false;
         }
       }
     });
 
     const alert = await this.alertCtrl.create({
-      header: categoria ? ' Categoría' : 'Nueva Categoría',
+      header: categoria ? 'Editar Categoría' : 'Nueva Categoría',
       cssClass: 'custom-alert',
       inputs: [
         { 
           name: 'nombre', 
           type: 'text', 
-          placeholder: 'Categoria (Ej: Comida)', 
+          placeholder: 'Categoría (Ej: Comida)', 
           value: categoria?.nombre 
         },
         { 
           name: 'asignado', 
           type: 'number', 
           placeholder: 'Presupuesto mensual', 
-          value: categoria?.valorAsignado ?? '' 
+          value: categoria?.valorAsignado ?? ''
         },
         {
           name: 'gasto',
           type: 'number',
-          // Valor gastado
           placeholder: 'Valor gastado',
           value: categoria?.valorGasto ?? 0
         }

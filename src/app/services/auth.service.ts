@@ -1,13 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Database } from './database';
-
-export interface UsuarioRecord {
-    id?: number; // El id es opcional porque no existe antes de insertar en la BD
-    nombre: string;
-    apellido: string;
-    correo: string;
-    contrasena: string;
-}
+import { Database, UsuarioRecord } from './database'; // Importamos la interfaz desde database
 
 @Injectable({
     providedIn: 'root'
@@ -15,11 +7,10 @@ export interface UsuarioRecord {
 export class AuthService {
     constructor(private db: Database) { }
 
-    async login(correo: string, contrasena: string): Promise<any> {
+    async login(correo: string, contrasena: string): Promise<UsuarioRecord | null> {
         await this.db.waitForReady();
         const user = await this.db.loginUsuario(correo, contrasena);
         
-        // Verificación segura de la existencia del usuario e id
         if (user && user.id !== undefined) {
             localStorage.setItem('userId', user.id.toString());
             localStorage.setItem('userName', `${user.nombre} ${user.apellido}`);
@@ -29,21 +20,19 @@ export class AuthService {
 
     async register(nombre: string, apellido: string, correo: string, contrasena: string): Promise<number> {
         await this.db.waitForReady();
-        // Se elimina 'id: 0', la BD se encarga del Autoincrement
         return await this.db.createUsuario({ nombre, apellido, correo, contrasena });
     }
 
-    async getCurrentUser(): Promise<any> {
+    async getCurrentUser(): Promise<UsuarioRecord | null> {
         const value = localStorage.getItem('userId');
         if (!value) return null;
 
         await this.db.waitForReady();
-        const result = this.db.query(
+        const result = await this.db.query(
             'SELECT * FROM usuarios WHERE id = ?;',
             [parseInt(value)]
         );
-        
-        return result.length > 0 ? result[0] : null;
+        return result && result.length > 0 ? (result[0] as UsuarioRecord) : null;
     }
 
     async logout(): Promise<void> {

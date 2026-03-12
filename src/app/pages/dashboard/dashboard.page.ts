@@ -5,17 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { Database, TransaccionRecord } from '../../services/database';
 import { AuthService } from '../../services/auth.service';
 import { addIcons } from 'ionicons';
-import { 
-  receiptOutline, 
-  statsChartOutline, 
-  walletOutline, 
-  pricetagsOutline, 
-  trendingUpOutline, 
-  trendingDownOutline, 
-  arrowDownOutline, 
-  arrowUpOutline, 
-  settingsOutline 
-} from 'ionicons/icons';
+import { receiptOutline, statsChartOutline, walletOutline, pricetagsOutline, trendingUpOutline, trendingDownOutline, arrowDownOutline, arrowUpOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,8 +34,7 @@ export class DashboardPage implements OnInit {
       trendingUpOutline,
       trendingDownOutline,
       arrowDownOutline,
-      arrowUpOutline,
-      settingsOutline
+      arrowUpOutline
     });
   }
 
@@ -104,7 +93,7 @@ export class DashboardPage implements OnInit {
   }
 
   rapidoAccess = [
-    { icon: 'settings-outline', title: 'Configuración', route: '/configuracion' },
+    { icon: 'receipt-outline', title: 'Transacciones', route: '/transaccion' },
     { icon: 'stats-chart-outline', title: 'Reportes', route: '/reporte' },
     { icon: 'wallet-outline', title: 'Presupuestos', route: '/presupuesto' },
     { icon: 'pricetags-outline', title: 'Categorías', route: '/categoria' }
