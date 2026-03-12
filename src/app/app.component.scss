@@ -144,7 +144,7 @@ ion-list {
   }
 }
 
-ion-menu::part(backdrop) {
+#ion-menu::part(backdrop) {
   display: none;
 }
 
