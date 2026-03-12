@@ -1,13 +1,145 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>transaccion</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="trans-content">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">transaccion</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Header personalizado -->
+  <div class="page-header">
+    <div class="header-top">
+      <h1>Transacciones</h1>
+      <div class="header-actions">
+        <ion-button fill="clear" (click)="nuevaTransaccion('ingreso')" class="btn-ingreso">
+          <ion-icon name="arrow-down-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="nuevaTransaccion('gasto')" class="btn-gasto">
+          <ion-icon name="arrow-up-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="resumen-row">
+      <div class="resumen-card ingreso">
+        <span class="resumen-label">Ingresos</span>
+        <span class="resumen-valor">{{ formatMoney(totalIngresos) }}</span>
+      </div>
+      <div class="resumen-divider"></div>
+      <div class="resumen-card gasto">
+        <span class="resumen-label">Gastos</span>
+        <span class="resumen-valor">{{ formatMoney(totalGastos) }}</span>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <ion-segment [value]="filtroTipo" (ionChange)="cambiarFiltro($any($event.detail.value))" class="filtros">
+      <ion-segment-button value="todos"><ion-label>Todos</ion-label></ion-segment-button>
+      <ion-segment-button value="ingreso"><ion-label>Ingresos</ion-label></ion-segment-button>
+      <ion-segment-button value="gasto"><ion-label>Gastos</ion-label></ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="transacciones.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <ion-icon name="swap-vertical-outline"></ion-icon>
+    </div>
+    <h3>Sin transacciones</h3>
+    <p>Agrega tu primera transacción</p>
+    <ion-button shape="round" (click)="nuevaTransaccion('gasto')">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      Nueva transacción
+    </ion-button>
+  </div>
+
+  <!-- Lista -->
+  <div class="trans-lista" *ngIf="transacciones.length > 0">
+    <ion-item-sliding *ngFor="let t of transacciones">
+      <ion-item class="trans-item" lines="none">
+        <div slot="start" class="trans-icon-wrap" [class.ingreso]="isIngreso(t)" [class.gasto]="!isIngreso(t)">
+          <ion-icon [name]="getIcon(t)"></ion-icon>
+        </div>
+
+        <ion-label>
+          <div class="trans-row-top">
+            <span class="trans-nombre">{{ t.descripcion || t.categoria }}</span>
+            <span class="trans-monto" [class.ingreso]="isIngreso(t)" [class.gasto]="!isIngreso(t)">
+              {{ getSign(t) }}{{ formatMoney(t.monto) }}
+            </span>
+          </div>
+          <div class="trans-row-bottom">
+            <span class="trans-tag">
+              <ion-icon name="pricetags-outline"></ion-icon>
+              {{ t.categoria }}
+            </span>
+            <span class="trans-fecha">{{ t.fecha }}</span>
+          </div>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="abrirFormulario(t)">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="eliminar(t)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </div>
+
+  <!-- FAB -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="fab-main" (click)="nuevaTransaccion('gasto')">
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Overlay -->
+  <div class="form-overlay" *ngIf="mostrarForm" (click)="cerrarForm()"></div>
+
+  <!-- Bottom sheet -->
+  <div class="form-sheet" [class.visible]="mostrarForm">
+    <div class="sheet-handle"></div>
+    <h2>{{ editandoId ? 'Editar' : 'Nueva' }} transacción</h2>
+
+    <div class="tipo-toggle">
+      <button class="tipo-btn" [class.active-ingreso]="form.tipo === 'ingreso'" (click)="form.tipo = 'ingreso'">
+        <ion-icon name="arrow-down-outline"></ion-icon> Ingreso
+      </button>
+      <button class="tipo-btn" [class.active-gasto]="form.tipo === 'gasto'" (click)="form.tipo = 'gasto'">
+        <ion-icon name="arrow-up-outline"></ion-icon> Gasto
+      </button>
+    </div>
+
+    <div class="field-group">
+      <label>Monto</label>
+      <ion-input type="number" placeholder="$ 0" [(ngModel)]="form.monto" class="custom-input"></ion-input>
+    </div>
+
+    <div class="field-group">
+      <label>Categoría</label>
+      <ion-select [(ngModel)]="form.categoria" placeholder="Selecciona una categoría"
+        interface="action-sheet" class="custom-input">
+        <ion-select-option *ngFor="let cat of categorias" [value]="cat.nombre">
+          {{ cat.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <div class="field-group">
+      <label>Fecha</label>
+      <ion-input type="date" [(ngModel)]="form.fecha" class="custom-input"></ion-input>
+    </div>
+
+    <div class="field-group">
+      <label>Descripción</label>
+      <ion-input type="text" placeholder="Opcional" [(ngModel)]="form.descripcion" class="custom-input"></ion-input>
+    </div>
+
+    <div class="btn-row">
+      <ion-button fill="outline" color="medium" (click)="cerrarForm()">Cancelar</ion-button>
+      <ion-button (click)="guardar()" [disabled]="!form.monto || !form.categoria">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        Guardar
+      </ion-button>
+    </div>
+  </div>
+
 </ion-content>
