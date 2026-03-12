@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Component, OnInit, NgZone } from '@angular/core'; 
+import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, 
-  IonCol, IonCard, IonCardContent, IonItem, IonIcon, IonLabel, 
-  IonProgressBar, IonList, IonAvatar, IonNote, IonFab, IonFabButton,
-  AlertController 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
+  IonLabel, IonIcon, IonAvatar, IonFab, IonFabButton, IonButtons, 
+  IonButton, AlertController, ActionSheetController, IonNote,
+  IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonProgressBar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  restaurantOutline, carOutline, bagHandleOutline, homeOutline, 
-  checkmarkCircleOutline, alertCircleOutline, trendingUpOutline, 
-  add, leafOutline, cashOutline
+  add, trashOutline, pencilOutline, cashOutline, 
+  receiptOutline, walletOutline, alertCircleOutline, 
+  trendingUpOutline, trendingDownOutline 
 } from 'ionicons/icons';
 
 @Component({
@@ -20,78 +20,165 @@ import {
   styleUrls: ['./presupuesto.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonTitle, 
-    IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonCardContent, 
-    IonItem, IonIcon, IonLabel, IonProgressBar, IonList, IonAvatar, 
-    IonNote, IonFab, IonFabButton
+    CommonModule, FormsModule, IonContent, IonHeader, IonTitle, IonToolbar, 
+    IonList, IonItem, IonLabel, IonIcon, IonAvatar, IonFab, IonFabButton,
+    IonButtons, IonButton, IonNote, IonGrid, IonRow, IonCol, IonCard, 
+    IonCardContent, IonProgressBar
   ],
-  providers: [CurrencyPipe] 
+  providers: [CurrencyPipe, DecimalPipe]
 })
 export class PresupuestoPage implements OnInit {
+  presupuestos: any[] = [];
+  transacciones: any[] = [];
 
-  
-  presupuestos: Array<{nombre: string, gastado: number, total: number, icon: string}> = [
-    { nombre: 'Arriendo', gastado: 1200000, total: 1200000, icon: 'home-outline' },
-    { nombre: 'Mercado', gastado: 450000, total: 800000, icon: 'restaurant-outline' },
-    { nombre: 'Moto', gastado: 150000, total: 200000, icon: 'car-outline' },
-    { nombre: 'Inversión', gastado: 2500000, total: 5000000, icon: 'trending-up-outline' }
-  ];
-
-  transacciones = [
-    { comercio: 'Éxito', categoria: 'Mercado', fecha: '08/02', monto: -120000, icon: 'restaurant-outline' },
-    { comercio: 'Nómina Quincena', categoria: 'Ingresos', fecha: '30/01', monto: 1800000, icon: 'cash-outline' }
-  ];
-
-  constructor(private alertCtrl: AlertController) {
+  constructor(
+    private alertCtrl: AlertController,
+    private actionSheetCtrl: ActionSheetController,
+     // Inyectamos NgZone para actualización instantánea
+    private zone: NgZone
+  ) {
     addIcons({ 
-      restaurantOutline, carOutline, bagHandleOutline, homeOutline, 
-      checkmarkCircleOutline, alertCircleOutline, trendingUpOutline, 
-      add, leafOutline, cashOutline
+      add, trashOutline, pencilOutline, cashOutline, 
+      receiptOutline, walletOutline, alertCircleOutline,
+      trendingUpOutline, trendingDownOutline
     });
   }
 
-  ngOnInit() {}
-
-  formatLabel(value: number): string {
-    if (value >= 1000000) {
-      const million = value / 1000000;
-      // Si es entero (1M), si tiene decimal (1.2M)
-      return (million % 1 === 0 ? million.toFixed(0) : million.toFixed(1)) + 'M';
-    } else if (value >= 1000) {
-      const k = value / 1000;
-      return (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
-    }
-    return value.toString();
+  ngOnInit() {
+    this.cargarDatos();
   }
 
-  async crearPresupuesto() {
+  ionViewWillEnter() {
+    this.cargarDatos();
+  }
+
+ cargarDatos() {
+    const presupuestosStorage = localStorage.getItem('mis_presupuestos');
+    const transaccionesStorage = localStorage.getItem('mis_transacciones');
+    this.presupuestos = presupuestosStorage ? JSON.parse(presupuestosStorage) : [];
+    this.transacciones = transaccionesStorage ? JSON.parse(transaccionesStorage) : [];
+  }
+
+  guardar() {
+    localStorage.setItem('mis_presupuestos', JSON.stringify(this.presupuestos));
+    localStorage.setItem('mis_transacciones', JSON.stringify(this.transacciones));
+    
+    // Forzamos a Angular a actualizar la vista dentro de su zona
+    // vista con datos tanto string como numericamente
+    // Transacción ( nombre) - Gasto o ingreso ( valor)
+    this.zone.run(() => {
+      this.cargarDatos();
+    });
+  }
+
+  //  GESTIÓN DE PRESUPUESTOS 
+  async gestionarPresupuesto(item?: any, index?: number) {
     const alert = await this.alertCtrl.create({
-      header: 'Nuevo Presupuesto',
-      subHeader: 'Ingresa valores en miles (ej: 500000)',
+      header: item ? 'Editar Presupuesto' : 'Nuevo Presupuesto',
+      cssClass: 'custom-alert',
       inputs: [
-        { name: 'nombre', type: 'text', placeholder: 'Nombre (ej. Salidas)' },
-        { name: 'total', type: 'number', placeholder: 'Monto total en COP' }
+        { name: 'nombre', type: 'text', placeholder: 'Nombre', value: item?.nombre || '' },
+        { name: 'total', type: 'number', placeholder: 'Monto Total', value: item?.total || '' },
+        { name: 'gastado', type: 'number', placeholder: 'Monto Gastado', value: item?.gastado || 0 }
       ],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Crear',
+          text: item ? 'BORRAR' : 'CANCELAR',
+          role: item ? 'destructive' : 'cancel',
+          cssClass: item ? 'alert-button-delete' : '',
+          handler: () => { if (item && index !== undefined) this.eliminarPresupuesto(index); }
+        },
+        {
+          text: 'GUARDAR',
           handler: (data) => {
-            const monto = parseFloat(data.total);
-            if (data.nombre && !isNaN(monto)) {
-              this.presupuestos.push({
-                nombre: data.nombre,
-                gastado: 0,
-                total: monto,
-                icon: 'bag-handle-outline' 
-              });
-              return true;
-            }
-            return false;
+            if (!data.nombre || !data.total) return false;
+            const nuevo = { 
+              nombre: data.nombre, 
+              total: parseFloat(data.total), 
+              gastado: parseFloat(data.gastado) || 0 
+            };
+            if (index !== undefined) this.presupuestos[index] = nuevo;
+            else this.presupuestos.push(nuevo);
+            this.guardar();
+            return true;
           }
         }
       ]
     });
     await alert.present();
   }
+
+  // FLUJO DE TRANSACCIONES (PREGUNTA PRIMERO) 
+  async seleccionarTipoTransaccion() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: '¿Qué tipo de transacción es?',
+      cssClass: 'custom-action-sheet',
+      buttons: [
+        {
+          text: 'Gasto',
+          icon: 'trending-down-outline',
+          handler: () => { 
+            setTimeout(() => this.abrirFormularioTransaccion('gasto'), 100); 
+          }
+        },
+        {
+          text: 'Ingreso',
+          icon: 'trending-up-outline',
+          handler: () => { 
+            setTimeout(() => this.abrirFormularioTransaccion('ingreso'), 100); 
+          }
+        },
+        { text: 'Cancelar', role: 'cancel' }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async abrirFormularioTransaccion(tipo: 'gasto' | 'ingreso', item?: any, index?: number) {
+    const alert = await this.alertCtrl.create({
+      header: item ? `Editar ${item.categoria}` : `Nuevo ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'}`,
+      cssClass: 'custom-alert',
+      inputs: [
+        { name: 'comercio', type: 'text', placeholder: 'Descripción', value: item?.comercio || '' },
+        { name: 'monto', type: 'number', placeholder: 'Monto', value: item ? Math.abs(item.monto) : '' }
+      ],
+      buttons: [
+        {
+          text: item ? 'BORRAR' : 'CANCELAR',
+          role: item ? 'destructive' : 'cancel',
+          cssClass: item ? 'alert-button-delete' : '',
+          handler: () => { if (item && index !== undefined) this.eliminarTransaccion(index); }
+        },
+        {
+          text: 'GUARDAR',
+          handler: (data) => {
+            const valorAbs = parseFloat(data.monto);
+            if (!data.comercio || isNaN(valorAbs)) return false;
+
+            const nueva = {
+              comercio: data.comercio,
+              monto: tipo === 'gasto' ? -valorAbs : valorAbs,
+              categoria: tipo === 'ingreso' ? 'Ingreso' : 'Gasto',
+              icon: tipo === 'ingreso' ? 'cash-outline' : 'receipt-outline'
+            };
+
+            if (index !== undefined) this.transacciones[index] = nueva;
+            else this.transacciones.unshift(nueva);
+            
+            this.guardar();
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  editarTransaccion(item: any, index: number) {
+    const tipo = item.monto < 0 ? 'gasto' : 'ingreso';
+    this.abrirFormularioTransaccion(tipo, item, index);
+  }
+
+  eliminarPresupuesto(index: number) { this.presupuestos.splice(index, 1); this.guardar(); }
+  eliminarTransaccion(index: number) { this.transacciones.splice(index, 1); this.guardar(); }
 }

@@ -3,7 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  IonContent, IonInput, IonLabel, IonButton, IonIcon, AlertController
+  IonContent, 
+  IonInput, 
+  IonLabel, 
+  IonButton, 
+  IonIcon, 
+  AlertController 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cameraOutline } from 'ionicons/icons';
@@ -18,10 +23,12 @@ import { Database } from 'src/app/services/database';
   imports: [CommonModule, FormsModule, IonContent, IonInput, IonLabel, IonButton, IonIcon]
 })
 export class ConfiguracionPage implements OnInit {
+  // Variables de visualización
   userName: string = '';
   userEmail: string = '';
   profileImage: string = 'assets/default-avatar.png';
 
+  // Variables de edición (NgModel)
   editNombre: string = '';
   editApellido: string = '';
   editCorreo: string = '';
@@ -38,21 +45,27 @@ export class ConfiguracionPage implements OnInit {
   }
 
   async ngOnInit() {
+    // Inicializa DB y carga datos al arrancar
     await this.database.initializeDatabase();
     await this.loadUserData();
   }
 
   async ionViewWillEnter() {
+    // Refresca datos al volver a la vista
     await this.loadUserData();
   }
 
   async loadUserData() {
     const user = await this.authService.getCurrentUser();
-    if (user) {
+    
+    // Valida existencia del usuario e ID
+    if (user && user.id) {
       this.userId = user.id;
       this.userName = `${user.nombre} ${user.apellido}`;
       this.userEmail = user.correo;
       this.profileImage = user.foto ?? 'assets/default-avatar.png';
+      
+      // Sincroniza inputs con datos actuales
       this.editNombre = user.nombre;
       this.editApellido = user.apellido;
       this.editCorreo = user.correo;
@@ -60,27 +73,30 @@ export class ConfiguracionPage implements OnInit {
   }
 
   async guardarCambios() {
-    if (!this.editNombre.trim()) {
-      const alert = await this.alertController.create({
-        header: 'Error', message: 'El nombre no puede estar vacío.',
-        buttons: ['OK']
-      });
-      await alert.present();
+    // Valida campos no vacíos
+    if (!this.editNombre.trim() || !this.editApellido.trim()) {
+      this.mostrarAlerta('Error', 'Nombre y apellido obligatorios.');
       return;
     }
-    this.database.run(
-      'UPDATE usuarios SET nombre = ?, apellido = ?, correo = ? WHERE id = ?;',
-      [this.editNombre.trim(), this.editApellido.trim(), this.editCorreo.trim(), this.userId]
-    );
-    localStorage.setItem('userName', `${this.editNombre.trim()} ${this.editApellido.trim()}`);
-    await this.loadUserData();
-    const alert = await this.alertController.create({
-      header: 'Guardado', message: 'Datos actualizados correctamente.',
-      buttons: ['OK']
-    });
-    await alert.present();
+
+    try {
+      // Actualiza base de datos
+      await this.database.run(
+        'UPDATE usuarios SET nombre = ?, apellido = ?, correo = ? WHERE id = ?;',
+        [this.editNombre.trim(), this.editApellido.trim(), this.editCorreo.trim(), this.userId]
+      );
+
+      // Actualiza almacenamiento local y UI
+      localStorage.setItem('userName', `${this.editNombre.trim()} ${this.editApellido.trim()}`);
+      await this.loadUserData();
+      this.mostrarAlerta('Éxito', 'Datos actualizados.');
+
+    } catch (error) {
+      this.mostrarAlerta('Error', 'No se pudo guardar.');
+    }
   }
 
+  // Activa input de archivo oculto
   triggerFileInput() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
     if (fileInput) fileInput.click();
@@ -89,31 +105,41 @@ export class ConfiguracionPage implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       const base64 = e.target.result as string;
       this.profileImage = base64;
-      this.database.run('UPDATE usuarios SET foto = ? WHERE id = ?;', [base64, this.userId]);
+      
+      // Guarda imagen en DB y localStorage
+      await this.database.run('UPDATE usuarios SET foto = ? WHERE id = ?;', [base64, this.userId]);
       localStorage.setItem('userPhoto', base64);
     };
-    
     reader.readAsDataURL(file);
   }
 
+  // Cierra sesión con confirmación
   async logout() {
     const alert = await this.alertController.create({
       header: '¿Cerrar sesión?',
-      message: '¿Estás seguro de que deseas salir?',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: 'No', role: 'cancel' },
         {
-          text: 'Cerrar Sesión', role: 'destructive',
+          text: 'Sí',
           handler: async () => {
             await this.authService.logout();
             this.router.navigate(['/welcome']);
           }
         }
       ]
+    });
+    await alert.present();
+  }
+
+  // Helper para alertas rápidas
+  private async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header, message, buttons: ['OK']
     });
     await alert.present();
   }
