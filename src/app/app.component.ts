@@ -1,10 +1,12 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink, IonAvatar, IonListHeader, IonNote, Platform } from '@ionic/angular/standalone';
+import { 
+  IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, 
+  IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink, 
+  IonAvatar, IonListHeader, IonNote, Platform, AlertController, IonButton 
+} from '@ionic/angular/standalone';
 import { AuthService } from './services/auth.service';
-//import { DatabaseService } from './services/database.service';
 import { Router } from '@angular/router';
-import { Capacitor } from '@capacitor/core';
 import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
 import { Database } from './services/database';
 import { addIcons } from 'ionicons';
@@ -14,7 +16,9 @@ import {
   newspaperOutline,
   gridOutline,
   pricetagsOutline,
-  logOutOutline
+  logOutOutline,
+  menuOutline,
+  chevronBackOutline
 } from 'ionicons/icons';
 import { Page } from './models/page';
 
@@ -42,6 +46,7 @@ import { Page } from './models/page';
     IonAvatar,
     IonListHeader,
     IonNote,
+    IonButton
   ],
 })
 export class AppComponent implements OnInit {
@@ -54,13 +59,10 @@ export class AppComponent implements OnInit {
   ];
 
   public isLoggedIn = false;
-
+  public isMenuVisible = true; // Variable para controlar la visibilidad de la barra
   public isWeb: boolean = false;
-
   public userName: string = 'Usuario';
-
   public userPhoto: string = 'assets/default-avatar.png';
-
   private sqlite = new SQLiteConnection(CapacitorSQLite);
 
   constructor(
@@ -68,8 +70,9 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private database: Database,
     private router: Router,
-
+    private alertController: AlertController
   ) {
+    // Registro de todos los iconos necesarios
     addIcons({
       'grid-outline': gridOutline,
       'pricetags-outline': pricetagsOutline,
@@ -77,6 +80,8 @@ export class AppComponent implements OnInit {
       'newspaper-outline': newspaperOutline,
       'cog-outline': cogOutline,
       'log-out-outline': logOutOutline,
+      'menu-outline': menuOutline,
+      'chevron-back-outline': chevronBackOutline
     });
   }
 
@@ -90,6 +95,11 @@ export class AppComponent implements OnInit {
       await this.loadUserData();
       this.checkLoginStatus();
     });
+  }
+
+  // Método para ocultar/mostrar la barra lateral
+  toggleMenu() {
+    this.isMenuVisible = !this.isMenuVisible;
   }
 
   async loadUserData() {
@@ -108,16 +118,33 @@ export class AppComponent implements OnInit {
     this.isLoggedIn = !!userId;
   }
 
-
   onPageClick(url: string) {
     this.router.navigateByUrl(url);
   }
 
   async onLogout() {
-    await this.authService.logout();
-    this.isLoggedIn = false;
-    this.userName = 'Usuario';
-    this.userPhoto = 'assets/default-avatar.png';
-    this.router.navigate(['/welcome']);
+    const alert = await this.alertController.create({
+      header: '¿Cerrar sesión?',
+      message: '¿Estás seguro de que deseas salir?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Cerrar Sesión',
+          role: 'destructive',
+          handler: async () => {
+            await this.authService.logout();
+            this.isLoggedIn = false;
+            this.userName = 'Usuario';
+            this.userPhoto = 'assets/default-avatar.png';
+            this.router.navigate(['/welcome']);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }
