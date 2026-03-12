@@ -1,3 +1,4 @@
+// Cabecera y fondo general
 .pres-header ion-toolbar {
   --background: transparent;
   --color: #0f172a;
@@ -6,6 +7,7 @@
 .pres-content {
   --background: #f1f5f9;
 
+  // Tarjeta de resumen (Gradiente)
   .resumen-card {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
     margin: 0;
@@ -20,6 +22,7 @@
       margin-bottom: 16px;
     }
 
+    // Contenedor de datos (Presupuesto/Gastado)
     .resumen-row {
       display: flex;
       justify-content: space-between;
@@ -52,6 +55,7 @@
           font-weight: 800;
           margin-top: 4px;
 
+          // Colores de estado
           &.negativo { color: #fca5a5; }
           &.positivo { color: #4ade80; }
         }
@@ -74,6 +78,7 @@
     }
   }
 
+  // Item de presupuesto individual
   .pres-item {
     --background: white;
     --border-radius: 16px;
@@ -81,6 +86,7 @@
     border-radius: 16px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.07);
 
+    // Icono lateral (Badge)
     .tipo-badge {
       width: 40px;
       height: 40px;
@@ -105,7 +111,6 @@
     .row-top {
       display: flex;
       justify-content: space-between;
-
       .cat { font-weight: 600; color: #0f172a; font-size: 15px; }
       .monto { font-weight: 700; color: #0f172a; font-size: 15px; }
     }
@@ -121,6 +126,7 @@
       .excedido { color: #dc2626; }
     }
 
+    // Barra de progreso
     ion-progress-bar {
       --background: #e5e7eb;
       --progress-background: #4f46e5;
@@ -134,6 +140,7 @@
     margin-bottom: 10px;
   }
 
+  // Botón flotante (+)
   ion-fab-button {
     --background: linear-gradient(135deg, #4f46e5, #7c3aed);
   }
