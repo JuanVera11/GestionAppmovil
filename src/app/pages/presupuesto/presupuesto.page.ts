@@ -1,18 +1,29 @@
-import { Component, OnInit, NgZone } from '@angular/core'; 
-import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, 
-  IonLabel, IonIcon, IonAvatar, IonFab, IonFabButton, IonButtons, 
-  IonButton, AlertController, ActionSheetController, IonNote,
-  IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonProgressBar
+import { RouterLink } from '@angular/router';
+import {
+  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
+  IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions,
+  IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput,
+  IonSelect, IonSelectOption, IonModal, ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  add, trashOutline, pencilOutline, cashOutline, 
-  receiptOutline, walletOutline, alertCircleOutline, 
-  trendingUpOutline, trendingDownOutline 
+import {
+  addOutline, walletOutline, closeOutline, trashOutline,
+  arrowBackOutline, createOutline, checkmarkOutline
 } from 'ionicons/icons';
+import { Database, CategoriaRecord } from 'src/app/services/database';
+import { AuthService } from 'src/app/services/auth.service';
+
+interface ItemPresupuesto {
+  id: number;
+  tipo: 'general' | 'categoria';
+  nombre: string;
+  monto: number;
+  gastado: number;
+  idCategoria?: number;
+}
 
 @Component({
   selector: 'app-presupuesto',
@@ -20,165 +31,137 @@ import {
   styleUrls: ['./presupuesto.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonTitle, IonToolbar, 
-    IonList, IonItem, IonLabel, IonIcon, IonAvatar, IonFab, IonFabButton,
-    IonButtons, IonButton, IonNote, IonGrid, IonRow, IonCol, IonCard, 
-    IonCardContent, IonProgressBar
-  ],
-  providers: [CurrencyPipe, DecimalPipe]
+    CommonModule, FormsModule, RouterLink,
+    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
+    IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions,
+    IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput,
+    IonSelect, IonSelectOption, IonModal
+  ]
 })
 export class PresupuestoPage implements OnInit {
-  presupuestos: any[] = [];
-  transacciones: any[] = [];
+
+  presupuestos: ItemPresupuesto[] = [];
+  categorias: CategoriaRecord[] = [];
+  userId = 0;
+  mostrarModal = false;
+
+  form: {
+    tipo: 'general' | 'categoria';
+    monto: number | null;
+    categoriaId: number | null;
+    mes: string;
+  } = { tipo: 'general', monto: null, categoriaId: null, mes: '' };
+
+  mesActual = new Date().toLocaleString('es-CO', { month: 'long', year: 'numeric' });
 
   constructor(
-    private alertCtrl: AlertController,
-    private actionSheetCtrl: ActionSheetController,
-     // Inyectamos NgZone para actualización instantánea
-    private zone: NgZone
+    private db: Database,
+    private authService: AuthService,
+    private toastCtrl: ToastController
   ) {
-    addIcons({ 
-      add, trashOutline, pencilOutline, cashOutline, 
-      receiptOutline, walletOutline, alertCircleOutline,
-      trendingUpOutline, trendingDownOutline
-    });
+    addIcons({ addOutline, walletOutline, closeOutline, trashOutline, arrowBackOutline, createOutline, checkmarkOutline });
   }
 
-  ngOnInit() {
-    this.cargarDatos();
+  async ngOnInit() {
+    await this.db.waitForReady();
+    const user = await this.authService.getCurrentUser();
+    if (user?.id) this.userId = user.id;
+    await this.cargar();
   }
 
-  ionViewWillEnter() {
-    this.cargarDatos();
+  async ionViewWillEnter() {
+    await this.cargar();
   }
 
- cargarDatos() {
-    const presupuestosStorage = localStorage.getItem('mis_presupuestos');
-    const transaccionesStorage = localStorage.getItem('mis_transacciones');
-    this.presupuestos = presupuestosStorage ? JSON.parse(presupuestosStorage) : [];
-    this.transacciones = transaccionesStorage ? JSON.parse(transaccionesStorage) : [];
+  async cargar() {
+    if (!this.userId) return;
+    this.categorias = await this.db.getCategorias(this.userId);
+    const generals = await this.db.getPresupuestos(this.userId);
+
+    const items: ItemPresupuesto[] = [];
+
+    // Presupuestos generales
+    for (const p of generals) {
+      items.push({
+        id: p.id,
+        tipo: 'general',
+        nombre: `General – ${p.mes} ${p.ano}`,
+        monto: p.monto,
+        gastado: p.gasto ?? 0
+      });
+    }
+
+    // Presupuestos por categoría (solo los que tienen valorAsignado > 0)
+    for (const c of this.categorias) {
+      if (c.valorAsignado > 0) {
+        items.push({
+          id: c.id,
+          tipo: 'categoria',
+          nombre: c.nombre,
+          monto: c.valorAsignado,
+          gastado: c.valorGasto,
+          idCategoria: c.id
+        });
+      }
+    }
+
+    this.presupuestos = items;
   }
 
-  guardar() {
-    localStorage.setItem('mis_presupuestos', JSON.stringify(this.presupuestos));
-    localStorage.setItem('mis_transacciones', JSON.stringify(this.transacciones));
-    
-    // Forzamos a Angular a actualizar la vista dentro de su zona
-    // vista con datos tanto string como numericamente
-    // Transacción ( nombre) - Gasto o ingreso ( valor)
-    this.zone.run(() => {
-      this.cargarDatos();
-    });
+  get totalPresupuesto() { return this.presupuestos.reduce((s, p) => s + p.monto, 0); }
+  get totalGastado() { return this.presupuestos.reduce((s, p) => s + p.gastado, 0); }
+  get disponible() { return this.totalPresupuesto - this.totalGastado; }
+
+  porcentaje(p: ItemPresupuesto) {
+    return p.monto ? Math.min(p.gastado / p.monto, 1) : 0;
   }
 
-  //  GESTIÓN DE PRESUPUESTOS 
-  async gestionarPresupuesto(item?: any, index?: number) {
-    const alert = await this.alertCtrl.create({
-      header: item ? 'Editar Presupuesto' : 'Nuevo Presupuesto',
-      cssClass: 'custom-alert',
-      inputs: [
-        { name: 'nombre', type: 'text', placeholder: 'Nombre', value: item?.nombre || '' },
-        { name: 'total', type: 'number', placeholder: 'Monto Total', value: item?.total || '' },
-        { name: 'gastado', type: 'number', placeholder: 'Monto Gastado', value: item?.gastado || 0 }
-      ],
-      buttons: [
-        {
-          text: item ? 'BORRAR' : 'CANCELAR',
-          role: item ? 'destructive' : 'cancel',
-          cssClass: item ? 'alert-button-delete' : '',
-          handler: () => { if (item && index !== undefined) this.eliminarPresupuesto(index); }
-        },
-        {
-          text: 'GUARDAR',
-          handler: (data) => {
-            if (!data.nombre || !data.total) return false;
-            const nuevo = { 
-              nombre: data.nombre, 
-              total: parseFloat(data.total), 
-              gastado: parseFloat(data.gastado) || 0 
-            };
-            if (index !== undefined) this.presupuestos[index] = nuevo;
-            else this.presupuestos.push(nuevo);
-            this.guardar();
-            return true;
-          }
-        }
-      ]
-    });
-    await alert.present();
+  formatMoney(v: number) {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
   }
 
-  // FLUJO DE TRANSACCIONES (PREGUNTA PRIMERO) 
-  async seleccionarTipoTransaccion() {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: '¿Qué tipo de transacción es?',
-      cssClass: 'custom-action-sheet',
-      buttons: [
-        {
-          text: 'Gasto',
-          icon: 'trending-down-outline',
-          handler: () => { 
-            setTimeout(() => this.abrirFormularioTransaccion('gasto'), 100); 
-          }
-        },
-        {
-          text: 'Ingreso',
-          icon: 'trending-up-outline',
-          handler: () => { 
-            setTimeout(() => this.abrirFormularioTransaccion('ingreso'), 100); 
-          }
-        },
-        { text: 'Cancelar', role: 'cancel' }
-      ]
-    });
-    await actionSheet.present();
+  abrirModal() {
+    const now = new Date();
+    this.form = {
+      tipo: 'general',
+      monto: null,
+      categoriaId: null,
+      mes: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    };
+    this.mostrarModal = true;
   }
 
-  async abrirFormularioTransaccion(tipo: 'gasto' | 'ingreso', item?: any, index?: number) {
-    const alert = await this.alertCtrl.create({
-      header: item ? `Editar ${item.categoria}` : `Nuevo ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'}`,
-      cssClass: 'custom-alert',
-      inputs: [
-        { name: 'comercio', type: 'text', placeholder: 'Descripción', value: item?.comercio || '' },
-        { name: 'monto', type: 'number', placeholder: 'Monto', value: item ? Math.abs(item.monto) : '' }
-      ],
-      buttons: [
-        {
-          text: item ? 'BORRAR' : 'CANCELAR',
-          role: item ? 'destructive' : 'cancel',
-          cssClass: item ? 'alert-button-delete' : '',
-          handler: () => { if (item && index !== undefined) this.eliminarTransaccion(index); }
-        },
-        {
-          text: 'GUARDAR',
-          handler: (data) => {
-            const valorAbs = parseFloat(data.monto);
-            if (!data.comercio || isNaN(valorAbs)) return false;
+  cerrarModal() { this.mostrarModal = false; }
 
-            const nueva = {
-              comercio: data.comercio,
-              monto: tipo === 'gasto' ? -valorAbs : valorAbs,
-              categoria: tipo === 'ingreso' ? 'Ingreso' : 'Gasto',
-              icon: tipo === 'ingreso' ? 'cash-outline' : 'receipt-outline'
-            };
+  async guardar() {
+    if (!this.form.monto) return;
 
-            if (index !== undefined) this.transacciones[index] = nueva;
-            else this.transacciones.unshift(nueva);
-            
-            this.guardar();
-            return true;
-          }
-        }
-      ]
-    });
-    await alert.present();
+    if (this.form.tipo === 'general') {
+      const [ano, mes] = this.form.mes.split('-');
+      const nombreMes = new Date(+ano, +mes - 1).toLocaleString('es-CO', { month: 'long' });
+      await this.db.createPresupuesto(this.form.monto, nombreMes, +ano, this.userId);
+    } else {
+      if (!this.form.categoriaId) return;
+      await this.db.updateCategoriaAsignado(this.form.categoriaId, this.form.monto, this.userId);
+    }
+
+    await this.cargar();
+    this.mostrarModal = false;
+    this.toast('Presupuesto guardado');
   }
 
-  editarTransaccion(item: any, index: number) {
-    const tipo = item.monto < 0 ? 'gasto' : 'ingreso';
-    this.abrirFormularioTransaccion(tipo, item, index);
+  async eliminar(item: ItemPresupuesto) {
+    if (item.tipo === 'general') {
+      await this.db.deletePresupuesto(item.id, this.userId);
+    } else {
+      await this.db.updateCategoriaAsignado(item.id, 0, this.userId);
+    }
+    await this.cargar();
+    this.toast('Presupuesto eliminado');
   }
 
-  eliminarPresupuesto(index: number) { this.presupuestos.splice(index, 1); this.guardar(); }
-  eliminarTransaccion(index: number) { this.transacciones.splice(index, 1); this.guardar(); }
+  async toast(msg: string) {
+    const t = await this.toastCtrl.create({ message: msg, duration: 2000, color: 'success', position: 'bottom' });
+    await t.present();
+  }
 }

@@ -1,79 +1,128 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar style="--background: #f8fafc;">
-    <ion-title style="font-weight: 800; color: #1e293b;">Mi Presupuesto</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="gestionarPresupuesto()" color="primary" fill="clear">
-        <ion-icon name="add" slot="start"></ion-icon>
-        NUEVO PRESUPUESTO
+<ion-header class="pres-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/dashboard">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title>Presupuestos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="main-wrapper">
-    <ion-grid>
-      <ion-row>
-        @for (p of presupuestos; track $index; let i = $index) {
-          <ion-col size="12" size-md="6">
-            <ion-card class="modern-card" (click)="gestionarPresupuesto(p, i)" button="true">
-              <ion-card-content>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                  <h2 class="p-name">{{p.nombre}}</h2>
-                  <ion-icon name="wallet-outline" color="primary" style="font-size: 1.5rem;"></ion-icon>
-                </div>
-                <div class="p-info">
-                  <span class="p-spent">{{p.gastado | currency:'USD':'symbol':'1.0-0'}}</span>
-                  <span class="p-total"> de {{p.total | currency:'USD':'symbol':'1.0-0'}}</span>
-                </div>
-                <ion-progress-bar [value]="p.gastado / p.total" 
-                  [color]="(p.gastado / p.total) > 0.9 ? 'danger' : 'primary'">
-                </ion-progress-bar>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        }
-      </ion-row>
-    </ion-grid>
+<ion-content class="pres-content">
 
-    @if (presupuestos.length === 0) {
-      <div class="empty-state">
-        <ion-icon name="alert-circle-outline"></ion-icon>
-        <p>Toca el botón "+" para crear un presupuesto.</p>
+  <div class="resumen-card">
+    <div class="mes-label">{{ mesActual | titlecase }}</div>
+    <div class="resumen-row">
+      <div class="res-item">
+        <span class="label">Total</span>
+        <span class="valor">{{ formatMoney(totalPresupuesto) }}</span>
       </div>
-    }
-
-    <div class="transactions-container">
-      <div class="section-header">
-        <h3>Transacciones</h3>
-        <ion-button fill="clear" (click)="seleccionarTipoTransaccion()" color="primary" style="font-weight: 700;">
-          <ion-icon name="add" slot="start"></ion-icon>
-          NUEVA TRANSACCIÓN
-        </ion-button>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="label">Gastado</span>
+        <span class="valor negativo">{{ formatMoney(totalGastado) }}</span>
       </div>
-      
-      <ion-list lines="none">
-        @for (t of transacciones; track $index; let i = $index) {
-          <ion-item button (click)="editarTransaccion(t, i)" class="t-item">
-            <div slot="start" class="t-icon" [class.income]="t.monto > 0">
-              <ion-icon [name]="t.icon"></ion-icon>
-            </div>
-            <ion-label>
-              <h3 style="font-weight: 700; color: #1e293b;">{{t.comercio}}</h3>
-              <p style="color: #64748b;">{{t.categoria}}</p>
-            </ion-label>
-            <ion-note slot="end" [color]="t.monto > 0 ? 'success' : 'danger'" style="font-weight: 700; font-size: 1rem;">
-              {{ (t.monto < 0 ? t.monto * -1 : t.monto) | currency:'USD':'symbol':'1.0-0'}}
-            </ion-note>
-          </ion-item>
-        }
-      </ion-list>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="label">Disponible</span>
+        <span class="valor positivo">{{ formatMoney(disponible) }}</span>
+      </div>
     </div>
   </div>
 
+  <div class="lista-wrapper">
+
+    <div *ngIf="presupuestos.length === 0" class="empty-state">
+      <ion-icon name="wallet-outline"></ion-icon>
+      <p>Sin presupuestos aún</p>
+    </div>
+
+    <ion-list lines="none">
+      <ion-item-sliding *ngFor="let p of presupuestos">
+        <ion-item class="pres-item">
+          <div slot="start" class="tipo-badge" [class.general]="p.tipo === 'general'"
+            [class.cat]="p.tipo === 'categoria'">
+            <ion-icon name="wallet-outline"></ion-icon>
+          </div>
+          <ion-label>
+            <div class="row-top">
+              <span class="cat">{{ p.nombre }}</span>
+              <span class="monto">{{ formatMoney(p.monto) }}</span>
+            </div>
+            <div class="row-mid">
+              <span class="gastado">{{ formatMoney(p.gastado) }} gastado</span>
+              <span class="restante" [class.excedido]="p.gastado > p.monto">
+                {{ p.gastado > p.monto ? 'Excedido' : formatMoney(p.monto - p.gastado) + ' restante' }}
+              </span>
+            </div>
+            <ion-progress-bar [value]="porcentaje(p)" [color]="p.gastado > p.monto ? 'danger' : 'primary'">
+            </ion-progress-bar>
+          </ion-label>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="eliminar(p)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="seleccionarTipoTransaccion()">
-      <ion-icon name="add"></ion-icon>
+    <ion-fab-button (click)="abrirModal()">
+      <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()" cssClass="modal-presupuesto" initialBreakpoint="0.75"
+    [breakpoints]="[0, 0.75, 1]">
+    <ng-template>
+      <ion-content class="modal-content">
+        <div class="sheet-handle"></div>
+        <h2>Nuevo presupuesto</h2>
+
+        <div class="tipo-toggle">
+          <button class="tipo-btn" [class.activo]="form.tipo === 'general'" (click)="form.tipo = 'general'">
+            General
+          </button>
+          <button class="tipo-btn" [class.activo]="form.tipo === 'categoria'" (click)="form.tipo = 'categoria'">
+            Por categoría
+          </button>
+        </div>
+
+        <div class="form-group" *ngIf="form.tipo === 'general'">
+          <label>Mes</label>
+          <ion-input type="month" [(ngModel)]="form.mes" class="custom-input"></ion-input>
+        </div>
+
+        <div class="form-group" *ngIf="form.tipo === 'categoria'">
+          <label>Categoría</label>
+          <ion-select [(ngModel)]="form.categoriaId" interface="action-sheet"
+            [interfaceOptions]="{ cssClass: 'categoria-sheet', header: 'Categorías' }"
+            placeholder="Selecciona categoría" class="custom-input">
+            <ion-select-option *ngFor="let c of categorias" [value]="c.id">
+              {{ c.nombre }}
+            </ion-select-option>
+          </ion-select>
+
+        </div>
+
+        <div class="form-group">
+          <label>Monto</label>
+          <ion-input type="number" [(ngModel)]="form.monto" placeholder="$ 0" class="custom-input"></ion-input>
+        </div>
+
+        <div class="btn-row">
+          <ion-button fill="outline" color="medium" (click)="cerrarModal()">Cancelar</ion-button>
+          <ion-button (click)="guardar()" [disabled]="!form.monto || (form.tipo === 'categoria' && !form.categoriaId)">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Guardar
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

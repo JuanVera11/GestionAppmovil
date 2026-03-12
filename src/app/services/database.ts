@@ -183,6 +183,32 @@ async updateCategoria(input: CategoriaRecord): Promise<boolean> {
     return true;
   }
 
+  async getPresupuestos(idUsuario: number): Promise<any[]> {
+  return this.query(
+    'SELECT * FROM presupuestos WHERE idUsuarioFk = ? ORDER BY ano DESC, mes DESC;',
+    [idUsuario]
+  );
+}
+
+async createPresupuesto(monto: number, mes: string, ano: number, idUsuario: number): Promise<number> {
+  return this.run(
+    'INSERT INTO presupuestos (monto, ingreso, gasto, mes, ano, estado, idUsuarioFk) VALUES (?, 0, 0, ?, ?, "activo", ?);',
+    [monto, mes, ano, idUsuario]
+  );
+}
+
+async deletePresupuesto(id: number, idUsuario: number): Promise<void> {
+  this.run('DELETE FROM presupuestos WHERE id = ? AND idUsuarioFk = ?;', [id, idUsuario]);
+}
+
+async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: number): Promise<void> {
+  this.run(
+    'UPDATE categorias SET valorAsignado = ? WHERE id = ? AND idUsuario = ?;',
+    [valorAsignado, id, idUsuario]
+  );
+}
+
+
   private async createSchema(): Promise<void> {
     this.db.run('PRAGMA foreign_keys = ON;');
 

@@ -35,3 +35,119 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+ion-modal.modal-presupuesto {
+    --border-radius: 24px 24px 0 0;
+    --background: #0f172a;
+    align-items: flex-end;
+
+    ion-content {
+        --background: #0f172a;
+        --color: white;
+    }
+
+    .sheet-handle {
+        width: 40px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        margin: 12px auto 20px;
+    }
+
+    h2 {
+        color: white;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 20px;
+        padding: 0 20px;
+    }
+
+    .tipo-toggle {
+        display: flex;
+        gap: 8px;
+        margin: 0 20px 18px;
+
+        .tipo-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+
+            &.activo {
+                background: rgba(99, 102, 241, 0.3);
+                border-color: #6366f1;
+                color: white;
+            }
+        }
+    }
+
+    .form-group {
+        margin: 0 20px 14px;
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+    }
+
+    .custom-input {
+        --background: rgba(255, 255, 255, 0.08);
+        --color: white;
+        --placeholder-color: rgba(255, 255, 255, 0.3);
+        --padding-start: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        height: 46px;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 10px;
+        margin: 20px 20px 0;
+
+        ion-button {
+            flex: 1;
+        }
+    }
+}
+
+// Action sheet de categorías
+ion-action-sheet.categoria-sheet {
+    --background: #1a1744;
+    --color: white;
+
+    .action-sheet-title {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .action-sheet-button {
+        --color: white;
+        --button-color: white;
+        font-size: 16px;
+        font-weight: 500;
+
+        &:not(.action-sheet-cancel) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        &.action-sheet-cancel {
+            --color: #f87171;
+            font-weight: 600;
+        }
+
+        &:hover {
+            --background: rgba(99, 102, 241, 0.15);
+        }
+    }
+}
