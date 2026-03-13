@@ -1,45 +1,48 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="light">
-    <ion-title class="main-title">Mis Categorías</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="router.navigate(['/dashboard'])">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="cat-content">
 
-<ion-content [fullscreen]="true" class="white-bg">
-
-  <!-- Estado vacío -->
-  <div *ngIf="categorias.length === 0" class="empty-state">
-    <ion-icon name="pricetags-outline"></ion-icon>
-    <p>No tienes categorías aún</p>
-    <ion-button fill="outline" (click)="abrirFormulario()">Crear categoría</ion-button>
+  <div class="page-header">
+    <div class="header-top">
+      <button class="back-btn" (click)="router.navigate(['/dashboard'])">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Mis Categorías</h1>
+      <div style="width:36px"></div>
+    </div>
   </div>
 
-  <!-- Lista de categorías -->
-  <ion-list *ngIf="categorias.length > 0" lines="full" class="ion-no-padding">
+  <div class="trans-lista">
+
+    <div *ngIf="categorias.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="pricetags-outline"></ion-icon>
+      </div>
+      <h3>Sin categorías</h3>
+      <p>Crea tu primera categoría</p>
+    </div>
+
     <ion-item-sliding *ngFor="let cat of categorias">
-      <ion-item (click)="abrirFormulario(cat)" class="category-item">
-        <div slot="start" class="icon-circle">
+      <ion-item (click)="abrirFormulario(cat)" class="trans-item">
+        <div slot="start" class="trans-icon-wrap ingreso">
           <ion-icon name="pricetags-outline"></ion-icon>
         </div>
-
         <ion-label>
-          <div class="row-header">
-            <h2 class="cat-name">{{ cat.nombre }}</h2>
-            <div class="bar-container">
-              <ion-progress-bar [color]="getColor(cat)" [value]="getProgreso(cat)">
-              </ion-progress-bar>
-            </div>
+          <div class="trans-row-top">
+            <span class="trans-nombre">{{ cat.nombre }}</span>
+            <span class="trans-monto">{{ formatMoney(cat.valorAsignado) }}</span>
           </div>
-          <p class="cat-info">
-            ${{ formatMoney(cat.valorAsignado) }} Asignado •
-            ${{ formatMoney(cat.valorGasto) }} Gastado
-          </p>
+          <div class="trans-row-bottom">
+            <span class="trans-tag">
+              <ion-icon name="trending-down-outline"></ion-icon>
+              {{ formatMoney(cat.valorGasto) }} gastado
+            </span>
+            <span class="trans-fecha">
+              {{ formatMoney(cat.valorAsignado - cat.valorGasto) }} restante
+            </span>
+          </div>
+          <div class="bar-wrap">
+            <ion-progress-bar [color]="getColor(cat)" [value]="getProgreso(cat)"></ion-progress-bar>
+          </div>
         </ion-label>
-
         <ion-icon name="chevron-forward-outline" slot="end" size="small" color="medium"></ion-icon>
       </ion-item>
 
@@ -49,10 +52,11 @@
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
-  </ion-list>
+
+  </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="custom-fab" (click)="abrirFormulario()">
+    <ion-fab-button class="fab-main" (click)="abrirFormulario()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

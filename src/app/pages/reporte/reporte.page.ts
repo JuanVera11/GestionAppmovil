@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Database } from 'src/app/services/database';
 import { AuthService } from 'src/app/services/auth.service';
 import Chart from 'chart.js/auto';
+import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { arrowBackOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-reporte',
@@ -26,7 +29,13 @@ export class ReportePage implements OnInit {
     ahorroEstimado: 0
   };
 
-  constructor(private db: Database, private auth: AuthService) { }
+  constructor(
+    public router: Router,
+    private db: Database,
+    private auth: AuthService
+  ) {
+    addIcons({ arrowBackOutline });
+  }
 
   async ngOnInit() {
     await this.db.waitForReady();

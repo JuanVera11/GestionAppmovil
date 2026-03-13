@@ -1,18 +1,14 @@
 <ion-content class="trans-content">
 
-  <!-- Header personalizado -->
   <div class="page-header">
     <div class="header-top">
+      <button class="back-btn" (click)="router.navigate(['/dashboard'])">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
       <h1>Transacciones</h1>
-      <div class="header-actions">
-        <ion-button fill="clear" (click)="nuevaTransaccion('ingreso')" class="btn-ingreso">
-          <ion-icon name="arrow-down-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="nuevaTransaccion('gasto')" class="btn-gasto">
-          <ion-icon name="arrow-up-outline"></ion-icon>
-        </ion-button>
-      </div>
     </div>
+    <!-- resto del header que ya tienes (resumen-row, filtros...) -->
+
 
     <!-- Resumen -->
     <div class="resumen-row">
@@ -115,8 +111,8 @@
 
     <div class="field-group">
       <label>Categoría</label>
-      <ion-select [(ngModel)]="form.categoria" placeholder="Selecciona una categoría"
-        interface="action-sheet" class="custom-input">
+      <ion-select [(ngModel)]="form.categoria" placeholder="Selecciona una categoría" interface="action-sheet"
+        class="custom-input">
         <ion-select-option *ngFor="let cat of categorias" [value]="cat.nombre">
           {{ cat.nombre }}
         </ion-select-option>

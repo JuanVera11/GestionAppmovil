@@ -1,257 +1,350 @@
-// 
 .dashboard-content {
-    --background: linear-gradient(160deg, #4f46e5, #7c3aed, #a855f7);
+    --background: #f4f6fb;
 
-    .greeting-section {
-        padding: 48px 24px 8px;
+    .dash-header {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        padding: 52px 20px 28px;
+        border-radius: 0 0 32px 32px;
 
-        .greeting-sub {
-            color: rgba(255, 255, 255, 0.7);
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .greeting-name {
-            color: white;
-            margin: 4px 0 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-    }
-
-    .saldo-hero {
-        text-align: center;
-        padding: 16px 24px 24px;
-
-        .saldo-label {
-            color: rgba(255, 255, 255, 0.7);
-            margin: 0;
-            font-size: 13px;
-        }
-
-        .saldo-valor {
-            color: white;
-            font-size: 40px;
-            font-weight: 800;
-            margin: 4px 0 0;
-        }
-
-        .saldo-valor.negative {
-            color: #fca5a5;
-        }
-    }
-
-    .stats-grid {
-        padding: 0 16px 16px;
-
-        .stat-card {
-            border-radius: 16px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
-
-            ion-icon {
-                font-size: 22px;
-            }
-
-            p {
-                margin: 0;
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.8);
-            }
-
-            h3 {
-                margin: 0;
-                font-size: 18px;
-                font-weight: 700;
-                color: white;
-            }
-
-            &.income {
-                background: rgba(34, 197, 94, 0.25);
-                border: 1px solid rgba(34, 197, 94, 0.4);
-
-                ion-icon {
-                    color: #4ade80;
-                }
-            }
-
-            &.expense {
-                background: rgba(239, 68, 68, 0.25);
-                border: 1px solid rgba(239, 68, 68, 0.4);
-
-                ion-icon {
-                    color: #f87171;
-                }
-            }
-        }
-    }
-
-    .progreso-card {
-        margin: 0 16px 20px;
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 16px;
-        padding: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-
-        .progreso-header {
+        .header-top {
             display: flex;
             justify-content: space-between;
-            color: white;
-            font-size: 13px;
-            margin-bottom: 10px;
+            align-items: flex-start;
+            margin-bottom: 24px;
 
-            .danger-text {
-                color: #fca5a5;
-                font-weight: 700;
-            }
-        }
-
-        ion-progress-bar {
-            height: 10px;
-            border-radius: 8px;
-            --background: rgba(255, 255, 255, 0.2);
-        }
-    }
-
-    .section-title {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        padding: 8px 20px 4px;
-    }
-
-    .rapido-grid {
-        padding: 0 16px 16px;
-
-        .action-card {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 20px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: transform 0.2s;
-
-            &:active {
-                transform: scale(0.96);
-            }
-
-            ion-icon {
-                font-size: 28px;
-                color: white;
-            }
-
-            p {
-                margin: 0;
-                color: white;
-                font-size: 12px;
-                font-weight: 500;
-                text-align: center;
-            }
-        }
-    }
-
-    .empty-trans {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 24px;
-        color: rgba(255, 255, 255, 0.5);
-
-        ion-icon {
-            font-size: 40px;
-            margin-bottom: 8px;
-        }
-
-        p {
-            margin: 0;
-            font-size: 14px;
-        }
-    }
-
-    .trans-list {
-        margin: 0 16px 32px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-
-        .trans-item {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            .trans-icon {
-                width: 38px;
-                height: 38px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-
-                &.ingreso {
-                    background: rgba(34, 197, 94, 0.25);
-
-                    ion-icon {
-                        color: #4ade80;
-                    }
-                }
-
-                &.gasto {
-                    background: rgba(239, 68, 68, 0.25);
-
-                    ion-icon {
-                        color: #f87171;
-                    }
-                }
-
-                ion-icon {
-                    font-size: 18px;
-                }
-            }
-
-            .trans-info {
-                flex: 1;
+            .greeting {
                 display: flex;
                 flex-direction: column;
 
-                .trans-desc {
-                    color: white;
-                    font-size: 14px;
-                    font-weight: 500;
+                .greeting-sub {
+                    font-size: 13px;
+                    color: rgba(255, 255, 255, 0.7);
                 }
 
-                .trans-fecha {
-                    color: rgba(255, 255, 255, 0.5);
-                    font-size: 11px;
+                .greeting-name {
+                    font-size: 22px;
+                    font-weight: 800;
+                    color: white;
+                    letter-spacing: 0.5px;
                 }
             }
 
-            .trans-monto {
-                font-size: 14px;
-                font-weight: 700;
+            .settings-btn {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
 
-                &.ingreso {
+                ion-icon {
+                    font-size: 20px;
+                }
+            }
+        }
+
+        .saldo-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+
+            .saldo-label {
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.65);
+                letter-spacing: 1.5px;
+                font-weight: 600;
+            }
+
+            .saldo-valor {
+                font-size: 44px;
+                font-weight: 800;
+                color: white;
+                margin-top: 4px;
+                letter-spacing: -1px;
+
+                &.negative {
+                    color: #fca5a5;
+                }
+            }
+        }
+
+        .stats-row {
+            display: flex;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 14px 20px;
+            align-items: center;
+            justify-content: space-around;
+
+            .stat-pill {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                ion-icon {
+                    font-size: 24px;
+                }
+
+                div {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .stat-label {
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.65);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                .stat-val {
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: white;
+                }
+
+                &.income ion-icon {
                     color: #4ade80;
                 }
 
-                &.gasto {
-                    color: #f87171;
+                &.expense ion-icon {
+                    color: #fca5a5;
+                }
+            }
+
+            .stat-divider {
+                width: 1px;
+                height: 40px;
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+    }
+
+    .dash-body {
+        padding: 20px 16px 40px;
+
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+
+                .card-title {
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: #1e1b4b;
+                }
+
+                .card-badge {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #4f46e5;
+                    background: rgba(79, 70, 229, 0.1);
+                    padding: 2px 10px;
+                    border-radius: 999px;
+
+                    &.danger {
+                        color: #dc2626;
+                        background: rgba(220, 38, 38, 0.1);
+                    }
+                }
+            }
+
+            ion-progress-bar {
+                --background: #e5e7eb;
+                --progress-background: #4f46e5;
+                height: 8px;
+                border-radius: 999px;
+            }
+
+            .progreso-labels {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 8px;
+                font-size: 12px;
+                color: #6b7280;
+            }
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 12px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+
+            .section-title {
+                margin: 0;
+            }
+
+            .ver-todo {
+                font-size: 13px;
+                color: #4f46e5;
+                font-weight: 600;
+                text-decoration: none;
+            }
+        }
+
+        .rapido-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+
+            .action-card {
+                background: white;
+                border-radius: 16px;
+                padding: 16px 8px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                transition: transform 0.15s;
+
+                &:active {
+                    transform: scale(0.94);
+                }
+
+                .action-icon {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 14px;
+                    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    ion-icon {
+                        font-size: 22px;
+                        color: white;
+                    }
+                }
+
+                span {
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #374151;
+                    text-align: center;
+                }
+            }
+        }
+
+        .empty-trans {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px;
+            color: #9ca3af;
+
+            ion-icon {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            p {
+                margin: 0;
+                font-size: 14px;
+            }
+        }
+
+        .trans-list {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+            .trans-item {
+                display: flex;
+                align-items: center;
+                padding: 14px 16px;
+                gap: 12px;
+                border-bottom: 1px solid #f1f5f9;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .trans-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+
+                    &.ingreso {
+                        background: rgba(79, 70, 229, 0.1);
+
+                        ion-icon {
+                            color: #4f46e5;
+                        }
+                    }
+
+                    &.gasto {
+                        background: rgba(124, 58, 237, 0.1);
+
+                        ion-icon {
+                            color: #7c3aed;
+                        }
+                    }
+
+                    ion-icon {
+                        font-size: 18px;
+                    }
+                }
+
+                .trans-info {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+
+                    .trans-desc {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #1e1b4b;
+                    }
+
+                    .trans-fecha {
+                        font-size: 11px;
+                        color: #9ca3af;
+                        margin-top: 2px;
+                    }
+                }
+
+                .trans-monto {
+                    font-size: 14px;
+                    font-weight: 800;
+
+                    &.ingreso {
+                        color: #16a34a;
+                    }
+
+                    &.gasto {
+                        color: #dc2626;
+                    }
                 }
             }
         }

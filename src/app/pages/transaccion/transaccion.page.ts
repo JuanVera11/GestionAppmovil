@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -5,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Database, TransaccionRecord, CategoriaRecord } from 'src/app/services/database';
 import { AuthService } from 'src/app/services/auth.service';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, swapVerticalOutline, arrowDownOutline, arrowUpOutline, pricetagsOutline, trashOutline, createOutline, checkmarkOutline } from 'ionicons/icons';
+import { addCircleOutline, arrowBackOutline, swapVerticalOutline, arrowDownOutline, arrowUpOutline, pricetagsOutline, trashOutline, createOutline, checkmarkOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-transaccion',
@@ -32,6 +33,7 @@ export class TransaccionPage implements OnInit {
   private userId = 0;
 
   constructor(
+    public router: Router,
     private db: Database,
     private auth: AuthService,
     private alertCtrl: AlertController
@@ -40,7 +42,7 @@ export class TransaccionPage implements OnInit {
       addCircleOutline, swapVerticalOutline,
       arrowDownOutline, arrowUpOutline,
       pricetagsOutline, trashOutline,
-      createOutline, checkmarkOutline
+      createOutline, checkmarkOutline, arrowBackOutline
     });
   }
 
@@ -89,7 +91,7 @@ export class TransaccionPage implements OnInit {
   isIngreso(t: TransaccionRecord) { return t.tipo === 'ingreso'; }
   getIcon(t: TransaccionRecord) { return t.tipo === 'ingreso' ? 'arrow-down-outline' : 'arrow-up-outline'; }
   getSign(t: TransaccionRecord) { return t.tipo === 'ingreso' ? '+' : '-'; }
-  
+
   get totalIngresos() {
     return this.transacciones
       .filter(t => t.tipo === 'ingreso')

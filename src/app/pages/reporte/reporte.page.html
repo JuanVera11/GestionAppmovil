@@ -1,32 +1,41 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar color="primary">
-    <ion-title>Análisis Financiero</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="reporte-content">
 
-<ion-content class="ion-padding gray-bg">
-  <div class="stats-grid">
-    <div class="stat-card main">
-      <span class="label">Presupuesto Total</span>
-      <h2 class="value">{{ formatMoney(resumen.totalAsignado) }}</h2>
+  <div class="page-header">
+    <div class="header-top">
+      <button class="back-btn" (click)="router.navigate(['/dashboard'])">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Análisis Financiero</h1>
+      <div style="width:36px"></div>
     </div>
-    <div class="stat-card">
-      <span class="label">Gastado</span>
-      <h2 class="value text-danger">{{ formatMoney(resumen.totalGastado) }}</h2>
-    </div>
-    <div class="stat-card">
-      <span class="label">Disponible</span>
-      <h2 class="value text-success">{{ formatMoney(resumen.ahorroEstimado) }}</h2>
+
+    <div class="resumen-row">
+      <div class="resumen-card">
+        <span class="resumen-label">Presupuesto</span>
+        <span class="resumen-valor">{{ formatMoney(resumen.totalAsignado) }}</span>
+      </div>
+      <div class="resumen-divider"></div>
+      <div class="resumen-card ingreso">
+        <span class="resumen-label">Disponible</span>
+        <span class="resumen-valor">{{ formatMoney(resumen.ahorroEstimado) }}</span>
+      </div>
+      <div class="resumen-divider"></div>
+      <div class="resumen-card gasto">
+        <span class="resumen-label">Gastado</span>
+        <span class="resumen-valor">{{ formatMoney(resumen.totalGastado) }}</span>
+      </div>
     </div>
   </div>
 
-  <div class="chart-container ion-margin-top">
-    <h3>Presupuesto vs Gasto</h3>
-    <canvas #barChart></canvas>
+  <div class="charts-wrap">
+    <div class="chart-card">
+      <h3>Presupuesto vs Gasto</h3>
+      <canvas #barChart></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Distribución de Gastos</h3>
+      <canvas #doughnutChart></canvas>
+    </div>
   </div>
 
-  <div class="chart-container ion-margin-top">
-    <h3>Distribución de Gastos</h3>
-    <canvas #doughnutChart></canvas>
-  </div>
 </ion-content>

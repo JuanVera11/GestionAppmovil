@@ -27,10 +27,9 @@ export class RegisterPage {
     private router: Router,
     private alertController: AlertController,
     private database: Database
-  ) { }
+  ) {}
 
   async register() {
-    // 1. Validación inicial
     if (!this.fullName.trim() || !this.email.trim() || !this.pass.trim() || !this.termsAccepted) {
       this.errorMsg = 'Completa todos los campos y acepta los términos';
       return;
@@ -40,28 +39,19 @@ export class RegisterPage {
     this.errorMsg = '';
 
     try {
-      // Separar nombre y apellido de forma segura
       const nameParts = this.fullName.trim().split(' ');
       const nombre = nameParts[0];
       const apellido = nameParts.slice(1).join(' ') || '';
 
-      // Esperar a que la base de datos esté lista
       await this.database.waitForReady();
 
-      await this.authService.register(
-        nombre,
-        apellido,
-        this.email,
-        this.pass
-      );
+      const newId = await this.authService.register(nombre, apellido, this.email, this.pass);
 
-      await this.showAlert('Éxito', '¡Cuenta creada! Inicia sesión.');
-      this.router.navigate(['/login']);
-    } 
-    catch (error: any) {
-      console.error('Error completo register:', error);
-      
-      // Manejo de errores específicos
+      if (newId) {
+        await this.authService.loginByUserId(newId, nombre, apellido);
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
+      }
+    } catch (error: any) {
       if (error.message?.includes('UNIQUE constraint failed')) {
         this.errorMsg = 'Este correo ya está registrado';
       } else {

@@ -1,148 +1,178 @@
-// Cabecera y fondo 
-.pres-header ion-toolbar {
-  --background: transparent;
-  --color: #ffffff; 
-}
-
 .pres-content {
-  --background: #f1f5f9;
-  
+  --background: #f4f6fb;
 
-  // Tarjeta de resumen (Gradiente)
-  .resumen-card {
+  .page-header {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    margin: 0;
-    padding: 52px 20px 28px;
-    color: white;
+    padding: 52px 20px 20px;
+    border-radius: 0 0 28px 28px;
 
-    .mes-label {
-      font-size: 13px;
-      opacity: 0.7;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 16px;
-    }
-
-    // Contenedor de datos (Presupuesto/Gastado)
-    .resumen-row {
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 14px 16px;
+      margin-bottom: 20px;
 
-      .res-divider {
-        width: 1px;
-        height: 36px;
-        background: rgba(255,255,255,0.2);
+      h1 {
+        color: white;
+        font-size: 26px;
+        font-weight: 800;
+        margin: 0;
       }
 
-      .res-item {
-        flex: 1;
+      .back-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        ion-icon { font-size: 20px; }
+      }
+    }
+
+    .resumen-row {
+      display: flex;
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 14px 20px;
+      align-items: center;
+      justify-content: space-around;
+
+      .resumen-card {
         display: flex;
         flex-direction: column;
         align-items: center;
 
-        .label {
+        .resumen-label {
           font-size: 11px;
-          color: rgba(255,255,255,0.65);
+          color: rgba(255,255,255,0.7);
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
-        .valor {
-          font-size: 15px;
+        .resumen-valor {
+          font-size: 16px;
           font-weight: 800;
+          color: white;
           margin-top: 4px;
-
-          // Colores de estado
-          &.negativo { color: #fca5a5; }
-          &.positivo { color: #4ade80; }
         }
+
+        &.ingreso .resumen-valor { color: #4ade80; }
+        &.gasto .resumen-valor   { color: #fca5a5; }
+      }
+
+      .resumen-divider {
+        width: 1px;
+        height: 36px;
+        background: rgba(255,255,255,0.2);
       }
     }
   }
 
-  .lista-wrapper {
+  .trans-lista {
     padding: 16px 12px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    ion-item-sliding {
+      border-radius: 16px;
+      overflow: hidden;
+    }
 
     .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 0;
-      color: #9ca3af;
+      padding: 60px 20px;
+      text-align: center;
 
-      ion-icon { font-size: 48px; margin-bottom: 12px; }
-      p { font-size: 15px; }
-    }
-  }
+      .empty-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(79, 70, 229, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
 
-  // Item de presupuesto individual
-  .pres-item {
-    --background: white;
-    --border-radius: 16px;
-    margin-bottom: 10px;
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-
-    // Icono lateral (Badge)
-    .tipo-badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 4px;
-
-      ion-icon { font-size: 20px; }
-
-      &.general {
-        background: rgba(79, 70, 229, 0.12);
-        ion-icon { color: #4f46e5; }
+        ion-icon { font-size: 40px; color: #4f46e5; }
       }
-      &.cat {
-        background: rgba(124, 58, 237, 0.12);
-        ion-icon { color: #7c3aed; }
+
+      h3 { color: #1e1b4b; font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+      p  { color: #888; font-size: 14px; margin: 0; }
+    }
+
+    .trans-item {
+      --background: white;
+      --border-radius: 16px;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-radius: 16px;
+
+      .trans-icon-wrap {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 4px;
+
+        ion-icon { font-size: 20px; }
+
+        &.general {
+          background: rgba(79, 70, 229, 0.12);
+          ion-icon { color: #4f46e5; }
+        }
+
+        &.gasto {
+          background: rgba(124, 58, 237, 0.12);
+          ion-icon { color: #7c3aed; }
+        }
+      }
+
+      .trans-row-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .trans-nombre { font-size: 15px; font-weight: 600; color: #1e1b4b; }
+        .trans-monto  { font-size: 15px; font-weight: 800; color: #dc2626; }
+      }
+
+      .trans-row-bottom {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+
+        .trans-tag {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: #7c3aed;
+          background: rgba(124, 58, 237, 0.08);
+          padding: 2px 8px;
+          border-radius: 999px;
+
+          ion-icon { font-size: 11px; }
+        }
+
+        .trans-fecha { font-size: 12px; color: #16a34a; }
+        .excedido    { color: #dc2626; }
       }
     }
-
-    .row-top {
-      display: flex;
-      justify-content: space-between;
-      .cat { font-weight: 600; color: #0f172a; font-size: 15px; }
-      .monto { font-weight: 700; color: #0f172a; font-size: 15px; }
-    }
-
-    .row-mid {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      margin: 3px 0 6px;
-
-      .gastado { color: #6b7280; }
-      .restante { color: #16a34a; }
-      .excedido { color: #dc2626; }
-    }
-
-    // Barra de progreso
-    ion-progress-bar {
-      --background: #e5e7eb;
-      --progress-background: #4f46e5;
-      border-radius: 999px;
-      height: 5px;
-    }
   }
 
-  ion-item-sliding {
-    border-radius: 16px;
-    margin-bottom: 10px;
-  }
-
-  // Botón flotante (+)
-  ion-fab-button {
+  .fab-main {
     --background: linear-gradient(135deg, #4f46e5, #7c3aed);
   }
 }

@@ -1,83 +1,85 @@
-<ion-header class="pres-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="router.navigate(['/dashboard'])">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Presupuestos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="pres-content">
 
-  <div class="resumen-card">
-    <div class="mes-label">{{ mesActual | titlecase }}</div>
+  <div class="page-header">
+    <div class="header-top">
+      <button class="back-btn" (click)="router.navigate(['/dashboard'])">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Presupuestos</h1>
+      <div style="width:36px"></div>
+    </div>
+
     <div class="resumen-row">
-      <div class="res-item">
-        <span class="label">Total</span>
-        <span class="valor">{{ formatMoney(totalPresupuesto) }}</span>
+      <div class="resumen-card">
+        <span class="resumen-label">Total</span>
+        <span class="resumen-valor">{{ formatMoney(totalPresupuesto) }}</span>
       </div>
-      <div class="res-divider"></div>
-      <div class="res-item">
-        <span class="label">Gastado</span>
-        <span class="valor negativo">{{ formatMoney(totalGastado) }}</span>
+      <div class="resumen-divider"></div>
+      <div class="resumen-card gasto">
+        <span class="resumen-label">Gastado</span>
+        <span class="resumen-valor">{{ formatMoney(totalGastado) }}</span>
       </div>
-      <div class="res-divider"></div>
-      <div class="res-item">
-        <span class="label">Disponible</span>
-        <span class="valor positivo">{{ formatMoney(disponible) }}</span>
+      <div class="resumen-divider"></div>
+      <div class="resumen-card ingreso">
+        <span class="resumen-label">Disponible</span>
+        <span class="resumen-valor">{{ formatMoney(disponible) }}</span>
       </div>
     </div>
   </div>
 
-  <div class="lista-wrapper">
+  <div class="trans-lista">
 
     <div *ngIf="presupuestos.length === 0" class="empty-state">
-      <ion-icon name="wallet-outline"></ion-icon>
-      <p>Sin presupuestos aún</p>
+      <div class="empty-icon">
+        <ion-icon name="wallet-outline"></ion-icon>
+      </div>
+      <h3>Sin presupuestos</h3>
+      <p>Crea tu primer presupuesto</p>
     </div>
 
-    <ion-list lines="none">
-      <ion-item-sliding *ngFor="let p of presupuestos">
-        <ion-item class="pres-item">
-          <div slot="start" class="tipo-badge" [class.general]="p.tipo === 'general'"
-            [class.cat]="p.tipo === 'categoria'">
-            <ion-icon name="wallet-outline"></ion-icon>
+    <ion-item-sliding *ngFor="let p of presupuestos">
+      <ion-item class="trans-item">
+        <div slot="start" class="trans-icon-wrap" [class.general]="p.tipo === 'general'" [class.gasto]="p.tipo === 'categoria'">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </div>
+        <ion-label>
+          <div class="trans-row-top">
+            <span class="trans-nombre">{{ p.nombre }}</span>
+            <span class="trans-monto gasto">{{ formatMoney(p.monto) }}</span>
           </div>
-          <ion-label>
-            <div class="row-top">
-              <span class="cat">{{ p.nombre }}</span>
-              <span class="monto">{{ formatMoney(p.monto) }}</span>
-            </div>
-            <div class="row-mid">
-              <span class="gastado">{{ formatMoney(p.gastado) }} gastado</span>
-              <span class="restante" [class.excedido]="p.gastado > p.monto">
-                {{ p.gastado > p.monto ? 'Excedido' : formatMoney(p.monto - p.gastado) + ' restante' }}
-              </span>
-            </div>
-            <ion-progress-bar [value]="porcentaje(p)" [color]="p.gastado > p.monto ? 'danger' : 'primary'">
-            </ion-progress-bar>
-          </ion-label>
-        </ion-item>
+          <div class="trans-row-bottom">
+            <span class="trans-tag">
+              <ion-icon name="trending-down-outline"></ion-icon>
+              {{ formatMoney(p.gastado) }} gastado
+            </span>
+            <span class="trans-fecha" [class.excedido]="p.gastado > p.monto">
+              {{ p.gastado > p.monto ? 'Excedido' : formatMoney(p.monto - p.gastado) + ' restante' }}
+            </span>
+          </div>
+          <ion-progress-bar style="margin-top:8px"
+            [value]="porcentaje(p)"
+            [color]="p.gastado > p.monto ? 'danger' : 'primary'">
+          </ion-progress-bar>
+        </ion-label>
+      </ion-item>
 
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="eliminar(p)">
-            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="eliminar(p)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="abrirModal()">
+    <ion-fab-button class="fab-main" (click)="abrirModal()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()" cssClass="modal-presupuesto" initialBreakpoint="0.75"
-    [breakpoints]="[0, 0.75, 1]">
+  <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()"
+    cssClass="modal-presupuesto" initialBreakpoint="0.75" [breakpoints]="[0, 0.75, 1]">
     <ng-template>
       <ion-content class="modal-content">
         <div class="sheet-handle"></div>
@@ -106,7 +108,6 @@
               {{ c.nombre }}
             </ion-select-option>
           </ion-select>
-
         </div>
 
         <div class="form-group">

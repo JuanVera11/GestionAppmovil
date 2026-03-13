@@ -1,83 +1,98 @@
-
 <ion-content class="dashboard-content">
 
-  <!-- Saludo -->
-  <div class="greeting-section">
-    <p class="greeting-sub">{{ getHora() }},</p>
-    <h1 class="greeting-name">{{ nombreUsuario }} </h1>
-  </div>
-
-  <!-- Saldo principal -->
-  <div class="saldo-hero">
-    <p class="saldo-label">Saldo Actual</p>
-    <h2 class="saldo-valor" [class.negative]="saldo < 0">{{ formatMoney(saldo) }}</h2>
-  </div>
-
-  <!-- Cards ingresos / gastos -->
-  <ion-grid class="stats-grid">
-    <ion-row>
-      <ion-col size="6">
-        <div class="stat-card income">
-          <ion-icon name="trending-up-outline"></ion-icon>
-          <p>Ingresos</p>
-          <h3>{{ formatMoney(ingresos) }}</h3>
-        </div>
-      </ion-col>
-      <ion-col size="6">
-        <div class="stat-card expense">
-          <ion-icon name="trending-down-outline"></ion-icon>
-          <p>Gastos</p>
-          <h3>{{ formatMoney(gastos) }}</h3>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Progreso presupuesto -->
-  <div class="progreso-card">
-    <div class="progreso-header">
-      <span>Progreso del mes</span>
-      <span [class.danger-text]="progresoPorc >= 90">{{ progresoPorc }}%</span>
+  <!-- HEADER GRADIENTE -->
+  <div class="dash-header">
+    <div class="header-top">
+      <div class="greeting">
+        <span class="greeting-sub">{{ getHora() | uppercase }},</span>
+        <span class="greeting-name">{{ nombreUsuario | uppercase }}</span>
+      </div>
+      <button class="settings-btn" [routerLink]="['/configuracion']">
+        <ion-icon name="settings-outline"></ion-icon>
+      </button>
     </div>
-    <ion-progress-bar [value]="progreso"
-      [color]="progresoPorc >= 90 ? 'danger' : progresoPorc >= 70 ? 'warning' : 'success'">
-    </ion-progress-bar>
-  </div>
 
-  <!-- Acceso rápido -->
-  <div class="section-title">Acceso Rápido</div>
-  <ion-grid class="rapido-grid">
-    <ion-row>
-      <ion-col size="6" *ngFor="let item of rapidoAccess">
-        <div class="action-card" [routerLink]="item.route">
-          <ion-icon [name]="item.icon"></ion-icon>
-          <p>{{ item.title }}</p>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Transacciones recientes -->
-  <div class="section-title">Últimas Transacciones</div>
-
-  <div *ngIf="transaccionesRecientes.length === 0" class="empty-trans">
-    <ion-icon name="receipt-outline"></ion-icon>
-    <p>Sin transacciones aún</p>
-  </div>
-
-  <div class="trans-list" *ngIf="transaccionesRecientes.length > 0">
-    <div class="trans-item" *ngFor="let t of transaccionesRecientes">
-      <div class="trans-icon" [class.ingreso]="t.tipo === 'ingreso'" [class.gasto]="t.tipo === 'gasto'">
-        <ion-icon [name]="t.tipo === 'ingreso' ? 'arrow-down-outline' : 'arrow-up-outline'"></ion-icon>
-      </div>
-      <div class="trans-info">
-        <span class="trans-desc">{{ t.descripcion || t.categoria }}</span>
-        <span class="trans-fecha">{{ t.fecha }}</span>
-      </div>
-      <span class="trans-monto" [class.ingreso]="t.tipo === 'ingreso'" [class.gasto]="t.tipo === 'gasto'">
-        {{ t.tipo === 'ingreso' ? '+' : '-' }}{{ formatMoney(t.monto) }}
+    <div class="saldo-hero">
+      <span class="saldo-label">SALDO ACTUAL</span>
+      <span class="saldo-valor" [class.negative]="saldo < 0">
+        {{ formatMoney(saldo) }}
       </span>
     </div>
+
+    <div class="stats-row">
+      <div class="stat-pill income">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <div>
+          <span class="stat-label">Ingresos</span>
+          <span class="stat-val">{{ formatMoney(ingresos) }}</span>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill expense">
+        <ion-icon name="trending-down-outline"></ion-icon>
+        <div>
+          <span class="stat-label">Gastos</span>
+          <span class="stat-val">{{ formatMoney(gastos) }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 
+  <!-- CUERPO -->
+  <div class="dash-body">
+
+    <!-- Progreso de presupuesto -->
+    <div class="section-card">
+      <div class="card-header">
+        <span class="card-title">Progreso del mes</span>
+        <span class="card-badge" [class.danger]="progresoPorc >= 80">{{ progresoPorc }}%</span>
+      </div>
+      <ion-progress-bar
+        [value]="progreso"
+        [color]="progresoPorc >= 80 ? 'danger' : 'primary'">
+      </ion-progress-bar>
+      <div class="progreso-labels">
+        <span>Gastado: {{ formatMoney(gastos) }}</span>
+        <span>Total: {{ formatMoney(ingresos) }}</span>
+      </div>
+    </div>
+
+    <!-- Acceso rápido -->
+    <p class="section-title">Acceso rápido</p>
+    <div class="rapido-grid">
+      <div class="action-card" *ngFor="let item of rapidoAccess" [routerLink]="[item.route]">
+        <div class="action-icon">
+          <ion-icon [name]="item.icon"></ion-icon>
+        </div>
+        <span>{{ item.title }}</span>
+      </div>
+    </div>
+
+    <!-- Transacciones recientes -->
+    <div class="section-header">
+      <p class="section-title">Recientes</p>
+      <a class="ver-todo" [routerLink]="['/transaccion']">Ver todo</a>
+    </div>
+
+    <div *ngIf="transaccionesRecientes.length === 0" class="empty-trans">
+      <ion-icon name="swap-vertical-outline"></ion-icon>
+      <p>Sin transacciones aún</p>
+    </div>
+
+    <div class="trans-list" *ngIf="transaccionesRecientes.length > 0">
+      <div class="trans-item" *ngFor="let t of transaccionesRecientes">
+        <div class="trans-icon" [class.ingreso]="t.tipo === 'ingreso'" [class.gasto]="t.tipo === 'gasto'">
+          <ion-icon [name]="t.tipo === 'ingreso' ? 'arrow-down-outline' : 'arrow-up-outline'"></ion-icon>
+        </div>
+        <div class="trans-info">
+          <span class="trans-desc">{{ t.descripcion || t.categoria }}</span>
+          <span class="trans-fecha">{{ t.categoria }} · {{ t.fecha }}</span>
+        </div>
+        <span class="trans-monto" [class.ingreso]="t.tipo === 'ingreso'" [class.gasto]="t.tipo === 'gasto'">
+          {{ t.tipo === 'ingreso' ? '+' : '-' }}{{ formatMoney(t.monto) }}
+        </span>
+      </div>
+    </div>
+
+  </div>
 </ion-content>
