@@ -53,10 +53,19 @@ export class DashboardPage implements OnInit {
     this.userId = user.id!;
     this.nombreUsuario = user.nombre;
 
-    const transacciones = this.db.query(
+    let transacciones = this.db.query(
       'SELECT * FROM transacciones WHERE idUsuario = ? ORDER BY fecha DESC;',
       [this.userId]
     ) as TransaccionRecord[];
+
+    // Si el usuario no tiene transacciones, generar de prueba automáticamente para demostración
+    if (transacciones.length === 0) {
+      await this.db.generarDatosPrueba(this.userId);
+      transacciones = this.db.query(
+        'SELECT * FROM transacciones WHERE idUsuario = ? ORDER BY fecha DESC;',
+        [this.userId]
+      ) as TransaccionRecord[];
+    }
 
     this.ingresos = transacciones
       .filter(t => t.tipo === 'ingreso')

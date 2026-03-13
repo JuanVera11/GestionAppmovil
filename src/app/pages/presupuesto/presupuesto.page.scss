@@ -1,11 +1,12 @@
-// Cabecera y fondo general
+// Cabecera y fondo 
 .pres-header ion-toolbar {
   --background: transparent;
-  --color: #0f172a;
+  --color: #ffffff; 
 }
 
 .pres-content {
   --background: #f1f5f9;
+  
 
   // Tarjeta de resumen (Gradiente)
   .resumen-card {
