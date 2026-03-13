@@ -28,13 +28,8 @@ jobs:
       - name: Add iOS platform
         run: npx cap add ios
 
-      - name: Capacitor sync
+      - name: Capacitor sync (runs pod install automatically)
         run: npx cap sync ios
-
-      - name: Pod install
-        run: |
-          cd ios/App
-          pod install
 
       - name: Build IPA
         run: |
