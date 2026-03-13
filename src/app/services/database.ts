@@ -127,10 +127,21 @@ export class Database {
     const nombre = (input.nombre ?? '').trim();
     const apellido = (input.apellido ?? '').trim();
     if (!nombre) throw new Error('El nombre es obligatorio');
-    return this.run(
+    const newId = this.run(
       'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
       [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
     );
+
+    // Seed base categories for this new user
+    const defaultCats = ['Comida', 'Transporte', 'Servicios', 'Recreación', 'Otros'];
+    for (const cat of defaultCats) {
+      this.run(
+        'INSERT INTO categorias (nombre, valorAsignado, valorGasto, idUsuario) VALUES (?, 0, 0, ?);',
+        [cat, newId]
+      );
+    }
+    
+    return newId;
   }
 
   async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
@@ -262,5 +273,67 @@ async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: numb
 
   private async seedBaseData(): Promise<void> {
 
+  }
+
+  async generarDatosPrueba(idUsuario: number): Promise<void> {
+    const now = new Date();
+    const nombreMes = now.toLocaleString('es-CO', { month: 'long' });
+    const ano = now.getFullYear();
+
+    // 1. Crear presupuesto de prueba si no existe
+    const presupuestos = await this.getPresupuestos(idUsuario);
+    if (presupuestos.length === 0) {
+      await this.createPresupuesto(5000000, nombreMes, ano, idUsuario);
+    }
+
+    // 2. Crear categorías si no existen
+    const catNombres = ['Comida', 'Transporte', 'Educación', 'Ropa', 'Viajes', 'Gastos Hormiga'];
+    const categorias = await this.getCategorias(idUsuario);
+    for (const cn of catNombres) {
+      if (!categorias.find(c => c.nombre === cn)) {
+        this.run(
+          'INSERT INTO categorias (nombre, valorAsignado, valorGasto, idUsuario) VALUES (?, 0, 0, ?);',
+          [cn, idUsuario]
+        );
+      }
+    }
+
+    // 3. Crear Ingreso inicial
+    const pastDate = new Date();
+    pastDate.setDate(now.getDate() - 10);
+    await this.createTransaccion({
+      monto: 6000000,
+      tipo: 'ingreso',
+      categoria: 'Salario',
+      fecha: pastDate.toISOString().substring(0, 10),
+      descripcion: 'Pago quincena',
+      idUsuario: idUsuario
+    });
+
+    // 4. Crear Gastos de prueba simulando actividad
+    const gastosSimulados = [
+      { monto: 850000, desc: 'Mercado mensual', cat: 'Comida', diasAtras: 5 },
+      { monto: 320000, desc: 'Gasolina e indrive', cat: 'Transporte', diasAtras: 4 },
+      { monto: 1100000, desc: 'Universidad', cat: 'Educación', diasAtras: 6 },
+      { monto: 450000, desc: 'Zapatos nuevos', cat: 'Ropa', diasAtras: 2 },
+      { monto: 200000, desc: 'Fin de semana', cat: 'Viajes', diasAtras: 8 },
+      { monto: 150000, desc: 'Cafés y snacks', cat: 'Gastos Hormiga', diasAtras: 1 },
+      { monto: 250000, desc: 'Cena con amigos', cat: 'Comida', diasAtras: 0 }
+    ];
+
+    for (const g of gastosSimulados) {
+      const d = new Date();
+      d.setDate(now.getDate() - g.diasAtras);
+      await this.createTransaccion({
+        monto: g.monto,
+        tipo: 'gasto',
+        categoria: g.cat,
+        fecha: d.toISOString().substring(0, 10),
+        descripcion: g.desc,
+        idUsuario: idUsuario
+      });
+    }
+
+    console.log('Datos de prueba generados para usuario:', idUsuario);
   }
 }
