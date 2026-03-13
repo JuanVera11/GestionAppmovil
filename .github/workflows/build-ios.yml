@@ -22,15 +22,16 @@ jobs:
       - name: Build web assets
         run: ionic build
 
-      - name: Add iOS platform
-        run: npx cap add ios
-
       - name: Capacitor sync
         run: npx cap sync ios
 
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
 
-      - name: Capacitor sync
-        run: npx cap sync ios
+      - name: Pod install
+        run: |
+          cd ios/App
+          pod install
 
       - name: Build IPA
         run: |
