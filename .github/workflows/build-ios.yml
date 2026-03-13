@@ -1,7 +1,7 @@
 name: Build IPA
 on:
   push:
-    branches: [main]
+    branches: [Rafael]
 
 jobs:
   build:
