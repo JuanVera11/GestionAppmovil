@@ -22,25 +22,13 @@ jobs:
       - name: Build web assets
         run: ionic build
 
-      - name: Remove old ios folder
-        run: rm -rf ios
-
-      - name: Add iOS platform
-        run: npx cap add ios
-
       - name: Capacitor sync
         run: npx cap sync ios
-
-      - name: List ios/App contents
-        run: ls -la ios/App/
 
       - name: Pod install
         run: |
           cd ios/App
           pod install --repo-update
-
-      - name: List after pod install
-        run: ls -la ios/App/
 
       - name: Build IPA
         run: |
