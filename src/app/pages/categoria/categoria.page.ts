@@ -1,14 +1,12 @@
+import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import {
-  restaurantOutline, carOutline, heartOutline, homeOutline,
-  schoolOutline, peopleOutline, bugOutline, briefcaseOutline,
-  giftOutline, videocamOutline, add, chevronForwardOutline, trash
-} from 'ionicons/icons';
+import { restaurantOutline, carOutline, heartOutline, homeOutline, schoolOutline, peopleOutline, bugOutline, briefcaseOutline, giftOutline, videocamOutline, add, chevronForwardOutline, trash,arrowBackOutline, checkmarkOutline } from 'ionicons/icons';
 import { Database, CategoriaRecord } from 'src/app/services/database';
 
 @Component({
@@ -16,7 +14,7 @@ import { Database, CategoriaRecord } from 'src/app/services/database';
   templateUrl: './categoria.page.html',
   styleUrls: ['./categoria.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, RouterLink]
 })
 export class CategoriaPage implements OnInit {
 
@@ -24,16 +22,13 @@ export class CategoriaPage implements OnInit {
   private userId: number = 0;
 
   constructor(
+    public router: Router,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private db: Database,
     private authService: AuthService
   ) {
-    addIcons({
-      restaurantOutline, carOutline, heartOutline, homeOutline,
-      schoolOutline, peopleOutline, bugOutline, briefcaseOutline,
-      giftOutline, videocamOutline, add, chevronForwardOutline, trash
-    });
+    addIcons({restaurantOutline, carOutline, heartOutline, homeOutline,schoolOutline, peopleOutline, bugOutline, briefcaseOutline,giftOutline, videocamOutline, add, chevronForwardOutline, trash,arrowBackOutline, checkmarkOutline});
   }
 
   async ngOnInit() {
@@ -123,7 +118,7 @@ export class CategoriaPage implements OnInit {
               [nombre, valorAsignado, valorGasto, this.userId]
             );
           }
-          
+
           await this.cargarCategorias();
           this.presentToast('¡Datos guardados!');
           return true;
@@ -139,16 +134,16 @@ export class CategoriaPage implements OnInit {
       header: categoria ? 'Editar Categoría' : 'Nueva Categoría',
       cssClass: 'custom-alert',
       inputs: [
-        { 
-          name: 'nombre', 
-          type: 'text', 
-          placeholder: 'Categoría (Ej: Comida)', 
-          value: categoria?.nombre 
+        {
+          name: 'nombre',
+          type: 'text',
+          placeholder: 'Categoría (Ej: Comida)',
+          value: categoria?.nombre
         },
-        { 
-          name: 'asignado', 
-          type: 'number', 
-          placeholder: 'Presupuesto mensual', 
+        {
+          name: 'asignado',
+          type: 'number',
+          placeholder: 'Presupuesto mensual',
           value: categoria?.valorAsignado ?? ''
         },
         {

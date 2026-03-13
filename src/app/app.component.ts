@@ -1,26 +1,12 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import {
-  IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle,
-  IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink,
-  IonAvatar, IonListHeader, IonNote, Platform, AlertController, IonButton
-} from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { RouterLinkActive, RouterModule } from '@angular/router';
+import { IonApp, IonIcon, IonRouterOutlet, Platform, AlertController } from '@ionic/angular/standalone';
+import { NgIf, NgFor } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
-import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
 import { Database } from './services/database';
 import { addIcons } from 'ionicons';
-import { NgIf } from '@angular/common';
-import {
-  pieChartOutline,
-  cogOutline,
-  newspaperOutline,
-  gridOutline,
-  pricetagsOutline,
-  logOutOutline,
-  menuOutline,
-  chevronBackOutline
-} from 'ionicons/icons';
+import { pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -28,46 +14,24 @@ import { Page } from './models/page';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    RouterModule,
-    RouterLink,
-    RouterLinkActive,
-    NgIf,
-    IonApp,
-    IonSplitPane,
-    IonMenu,
-    IonContent,
-    IonList,
-    IonMenuToggle,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    IonRouterLink,
-    IonRouterOutlet,
-    IonAvatar,
-    IonListHeader,
-    IonNote,
-    IonButton
-  ],
-
+  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet,],
 })
 export class AppComponent implements OnInit {
+
+  sidebarExpanded = true;
 
   public appPages = [
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
+    new Page('Transacciones', '/transaccion', 'swap-vertical-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
     new Page('Reportes', '/reporte', 'newspaper-outline'),
     new Page('Configuración', '/configuracion', 'cog-outline'),
   ];
 
   public isLoggedIn = false;
-  public isMenuVisible = true; // Variable para controlar la visibilidad de la barra
-  public isWeb: boolean = false;
   public userName: string = 'Usuario';
   public userPhoto: string = 'assets/default-avatar.png';
-  private sqlite = new SQLiteConnection(CapacitorSQLite);
 
   constructor(
     private platform: Platform,
@@ -76,17 +40,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private alertController: AlertController
   ) {
-    // Registro de todos los iconos necesarios
-    addIcons({
-      'grid-outline': gridOutline,
-      'pricetags-outline': pricetagsOutline,
-      'pie-chart-outline': pieChartOutline,
-      'newspaper-outline': newspaperOutline,
-      'cog-outline': cogOutline,
-      'log-out-outline': logOutOutline,
-      'menu-outline': menuOutline,
-      'chevron-back-outline': chevronBackOutline
-    });
+    addIcons({ pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline });
   }
 
   async ngOnInit() {
@@ -101,9 +55,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // Método para ocultar/mostrar la barra lateral
-  toggleMenu() {
-    this.isMenuVisible = !this.isMenuVisible;
+  toggleSidebar() {
+    this.sidebarExpanded = !this.sidebarExpanded;
   }
 
   async loadUserData() {
@@ -122,19 +75,18 @@ export class AppComponent implements OnInit {
     this.isLoggedIn = !!userId;
   }
 
-  onPageClick(url: string) {
-    this.router.navigateByUrl(url);
+  onNavClick() {
+  if (window.innerWidth <= 768) {
+    this.sidebarExpanded = false;
   }
+}
 
   async onLogout() {
     const alert = await this.alertController.create({
       header: '¿Cerrar sesión?',
       message: '¿Estás seguro de que deseas salir?',
       buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
+        { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Cerrar Sesión',
           role: 'destructive',
@@ -148,7 +100,7 @@ export class AppComponent implements OnInit {
         }
       ]
     });
-
     await alert.present();
   }
 }
+

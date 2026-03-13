@@ -1,20 +1,14 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-  IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions,
-  IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput,
-  IonSelect, IonSelectOption, IonModal, ToastController
-} from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput, IonSelect, IonSelectOption, IonModal, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  addOutline, walletOutline, closeOutline, trashOutline,
-  arrowBackOutline, createOutline, checkmarkOutline
-} from 'ionicons/icons';
+import { addOutline, walletOutline, closeOutline, trashOutline, arrowBackOutline, createOutline, checkmarkOutline } from 'ionicons/icons';
 import { Database, CategoriaRecord } from 'src/app/services/database';
 import { AuthService } from 'src/app/services/auth.service';
+import { publishFacade } from '@angular/compiler';
 
 interface ItemPresupuesto {
   id: number;
@@ -30,13 +24,7 @@ interface ItemPresupuesto {
   templateUrl: './presupuesto.page.html',
   styleUrls: ['./presupuesto.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, FormsModule, RouterLink,
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-    IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions,
-    IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput,
-    IonSelect, IonSelectOption, IonModal
-  ]
+  imports: [CommonModule, FormsModule, RouterLink, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonLabel, IonList, IonItemSliding, IonItem, IonItemOptions, IonItemOption, IonProgressBar, IonFab, IonFabButton, IonInput, IonSelect, IonSelectOption, IonModal]
 })
 export class PresupuestoPage implements OnInit {
 
@@ -57,7 +45,8 @@ export class PresupuestoPage implements OnInit {
   constructor(
     private db: Database,
     private authService: AuthService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    public router: Router
   ) {
     addIcons({ addOutline, walletOutline, closeOutline, trashOutline, arrowBackOutline, createOutline, checkmarkOutline });
   }
