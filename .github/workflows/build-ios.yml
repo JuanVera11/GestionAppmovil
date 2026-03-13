@@ -22,6 +22,13 @@ jobs:
       - name: Build web assets
         run: ionic build
 
+      - name: Add iOS platform
+        run: npx cap add ios
+
+      - name: Capacitor sync
+        run: npx cap sync ios
+
+
       - name: Capacitor sync
         run: npx cap sync ios
 
