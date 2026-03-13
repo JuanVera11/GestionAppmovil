@@ -16,6 +16,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli
+
+      - name: Build web assets
+        run: ionic build
+
       - name: Capacitor sync
         run: npx cap sync ios
 
