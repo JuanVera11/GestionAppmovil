@@ -47,13 +47,13 @@ export class AppComponent implements OnInit {
     await this.platform.ready();
     await this.database.initializeDatabase();
     await this.loadUserData();
-    await this.checkLoginStatus();
 
-    this.router.events.subscribe(async () => {
-      await this.loadUserData();
-      this.checkLoginStatus();
+    this.authService.isLoggedIn$.subscribe(async (logged) => {
+      this.isLoggedIn = logged;
+      if (logged) await this.loadUserData();
     });
   }
+
 
   toggleSidebar() {
     this.sidebarExpanded = !this.sidebarExpanded;

@@ -2,7 +2,7 @@
   <div class="register-container">
     <div class="register-card">
       <h1>Crear Cuenta</h1>
-      
+
       <form (ngSubmit)="register()">
         <div class="form1-group">
           <ion-label>Nombre Completo</ion-label>
@@ -39,7 +39,12 @@
           <ion-checkbox [(ngModel)]="termsAccepted" name="termsAccepted" slot="start"></ion-checkbox>
           <ion-label>Acepto términos</ion-label>
         </ion-item>
-
+        <div class="success-msg" *ngIf="successMsg">
+          {{ successMsg }}
+        </div>
+        <div class="error-msg" *ngIf="errorMsg">
+          {{ errorMsg }}
+        </div>
         <ion-button expand="block" type="submit" class="btn-primary"
           [disabled]="!fullName || !email || !pass || !termsAccepted">
           Registrarse
