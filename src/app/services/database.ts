@@ -45,6 +45,7 @@ export class Database {
       if (!initSqlJs) {
         throw new Error('initSqlJs no está disponible globalmente. Falta sql-wasm.js en scripts.');
       }
+
       this.SQL = await initSqlJs({
         locateFile: () => 'assets/sql-wasm.wasm'
       });
@@ -53,19 +54,15 @@ export class Database {
       if (saved) {
         const binary = atob(saved);
         const buf = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          buf[i] = binary.charCodeAt(i);
-        }
+        for (let i = 0; i < binary.length; i++) buf[i] = binary.charCodeAt(i);
         this.db = new this.SQL.Database(buf);
       } else {
         this.db = new this.SQL.Database();
       }
 
       await this.createSchema();
-      await this.seedBaseData();
       this.save();
       this.ready$.next(true);
-      console.log('Base de datos lista');
     } catch (error) {
       console.error('Error inicializando BD:', error);
       throw error;
@@ -115,9 +112,7 @@ export class Database {
       const columns = result[0].columns;
       return result[0].values.map((row: any[]) => {
         const obj: any = {};
-        columns.forEach((col: string, i: number) => {
-          obj[col] = row[i];
-        });
+        columns.forEach((col: string, i: number) => { obj[col] = row[i]; });
         return obj;
       });
     } catch (e) {
@@ -130,30 +125,18 @@ export class Database {
     const nombre = (input.nombre ?? '').trim();
     const apellido = (input.apellido ?? '').trim();
     if (!nombre) throw new Error('El nombre es obligatorio');
-    const newId = this.run(
+    this.run(
       'INSERT INTO usuarios (nombre, apellido, correo, contrasena) VALUES (?, ?, ?, ?);',
       [nombre, apellido, input.correo.trim(), input.contrasena.trim()]
     );
-
-    // Seed base categories for this new user
-    const defaultCats = ['Comida', 'Transporte', 'Servicios', 'Recreación', 'Otros'];
-    for (const cat of defaultCats) {
-      this.run(
-        'INSERT INTO categorias (nombre, valorAsignado, valorGasto, idUsuario) VALUES (?, 0, 0, ?);',
-        [cat, newId]
-      );
-    }
-    
-    return newId;
+    const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [input.correo.trim()]);
+    return result[0]?.id ?? 0;
   }
 
   async updateContrasena(correo: string, nuevaContrasena: string): Promise<boolean> {
     const result = this.query('SELECT id FROM usuarios WHERE correo = ?;', [correo.trim()]);
     if (result.length === 0) return false;
-    this.run(
-      'UPDATE usuarios SET contrasena = ? WHERE correo = ?;',
-      [nuevaContrasena.trim(), correo.trim()]
-    );
+    this.run('UPDATE usuarios SET contrasena = ? WHERE correo = ?;', [nuevaContrasena.trim(), correo.trim()]);
     return true;
   }
 
@@ -170,20 +153,31 @@ export class Database {
   }
 
   async getCategorias(idUsuario: number): Promise<CategoriaRecord[]> {
-  return this.query(
-    'SELECT * FROM categorias WHERE idUsuario = ? ORDER BY nombre ASC;',
-    [idUsuario]
-  );
-}
+    return this.query('SELECT * FROM categorias WHERE idUsuario = ? ORDER BY nombre ASC;', [idUsuario]);
+  }
 
-async updateCategoria(input: CategoriaRecord): Promise<boolean> {
-  this.run(
-    'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ? AND idUsuario = ?;',
-    [input.valorAsignado, input.valorGasto, input.id, input.idUsuario]
-  );
-  return true;
-}
+  async createCategoria(nombre: string, idUsuario: number): Promise<number> {
+    return this.run(
+      'INSERT INTO categorias (nombre, valorAsignado, valorGasto, idUsuario) VALUES (?, 0, 0, ?);',
+      [nombre.trim(), idUsuario]
+    );
+  }
 
+  async deleteCategoria(id: number, idUsuario: number): Promise<void> {
+    this.run('DELETE FROM categorias WHERE id = ? AND idUsuario = ?;', [id, idUsuario]);
+  }
+
+  async updateCategoria(input: CategoriaRecord): Promise<boolean> {
+    this.run(
+      'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ? AND idUsuario = ?;',
+      [input.valorAsignado, input.valorGasto, input.id, input.idUsuario]
+    );
+    return true;
+  }
+
+  async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: number): Promise<void> {
+    this.run('UPDATE categorias SET valorAsignado = ? WHERE id = ? AND idUsuario = ?;', [valorAsignado, id, idUsuario]);
+  }
 
   async createTransaccion(input: TransaccionRecord): Promise<number> {
     return this.run(
@@ -198,34 +192,22 @@ async updateCategoria(input: CategoriaRecord): Promise<boolean> {
   }
 
   async getPresupuestos(idUsuario: number): Promise<any[]> {
-  return this.query(
-    'SELECT * FROM presupuestos WHERE idUsuarioFk = ? ORDER BY ano DESC, mes DESC;',
-    [idUsuario]
-  );
-}
+    return this.query('SELECT * FROM presupuestos WHERE idUsuarioFk = ? ORDER BY ano DESC, mes DESC;', [idUsuario]);
+  }
 
-async createPresupuesto(monto: number, mes: string, ano: number, idUsuario: number): Promise<number> {
-  return this.run(
-    'INSERT INTO presupuestos (monto, ingreso, gasto, mes, ano, estado, idUsuarioFk) VALUES (?, 0, 0, ?, ?, "activo", ?);',
-    [monto, mes, ano, idUsuario]
-  );
-}
+  async createPresupuesto(monto: number, mes: string, ano: number, idUsuario: number): Promise<number> {
+    return this.run(
+      'INSERT INTO presupuestos (monto, ingreso, gasto, mes, ano, estado, idUsuarioFk) VALUES (?, 0, 0, ?, ?, "activo", ?);',
+      [monto, mes, ano, idUsuario]
+    );
+  }
 
-async deletePresupuesto(id: number, idUsuario: number): Promise<void> {
-  this.run('DELETE FROM presupuestos WHERE id = ? AND idUsuarioFk = ?;', [id, idUsuario]);
-}
-
-async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: number): Promise<void> {
-  this.run(
-    'UPDATE categorias SET valorAsignado = ? WHERE id = ? AND idUsuario = ?;',
-    [valorAsignado, id, idUsuario]
-  );
-}
-
+  async deletePresupuesto(id: number, idUsuario: number): Promise<void> {
+    this.run('DELETE FROM presupuestos WHERE id = ? AND idUsuarioFk = ?;', [id, idUsuario]);
+  }
 
   private async createSchema(): Promise<void> {
     this.db.run('PRAGMA foreign_keys = ON;');
-
     this.db.run(`CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nombre TEXT NOT NULL,
@@ -234,15 +216,13 @@ async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: numb
       contrasena TEXT NOT NULL,
       foto TEXT DEFAULT NULL
     );`);
-
     this.db.run(`CREATE TABLE IF NOT EXISTS categorias (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre TEXT NOT NULL,
-  valorAsignado REAL DEFAULT 0,
-  valorGasto REAL DEFAULT 0,
-  idUsuario INTEGER DEFAULT NULL
-);`);
-
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT NOT NULL,
+      valorAsignado REAL DEFAULT 0,
+      valorGasto REAL DEFAULT 0,
+      idUsuario INTEGER DEFAULT NULL
+    );`);
     this.db.run(`CREATE TABLE IF NOT EXISTS presupuestos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       monto REAL NOT NULL,
@@ -253,7 +233,6 @@ async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: numb
       estado TEXT,
       idUsuarioFk INTEGER NOT NULL
     );`);
-
     this.db.run(`CREATE TABLE IF NOT EXISTS transacciones (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       monto REAL NOT NULL,
@@ -263,80 +242,7 @@ async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: numb
       descripcion TEXT,
       idUsuario INTEGER NOT NULL
     );`);
-
-    try {
-      this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
-    } catch (e) { }
-    try {
-  this.db.run('ALTER TABLE categorias ADD COLUMN idUsuario INTEGER DEFAULT NULL;');
-} catch (e) {}
-
-  }
-  
-
-  private async seedBaseData(): Promise<void> {
-
-  }
-
-  async generarDatosPrueba(idUsuario: number): Promise<void> {
-    const now = new Date();
-    const nombreMes = now.toLocaleString('es-CO', { month: 'long' });
-    const ano = now.getFullYear();
-
-    // 1. Crear presupuesto de prueba si no existe
-    const presupuestos = await this.getPresupuestos(idUsuario);
-    if (presupuestos.length === 0) {
-      await this.createPresupuesto(5000000, nombreMes, ano, idUsuario);
-    }
-
-    // 2. Crear categorías si no existen
-    const catNombres = ['Comida', 'Transporte', 'Educación', 'Ropa', 'Viajes', 'Gastos Hormiga'];
-    const categorias = await this.getCategorias(idUsuario);
-    for (const cn of catNombres) {
-      if (!categorias.find(c => c.nombre === cn)) {
-        this.run(
-          'INSERT INTO categorias (nombre, valorAsignado, valorGasto, idUsuario) VALUES (?, 0, 0, ?);',
-          [cn, idUsuario]
-        );
-      }
-    }
-
-    // 3. Crear Ingreso inicial
-    const pastDate = new Date();
-    pastDate.setDate(now.getDate() - 10);
-    await this.createTransaccion({
-      monto: 6000000,
-      tipo: 'ingreso',
-      categoria: 'Salario',
-      fecha: pastDate.toISOString().substring(0, 10),
-      descripcion: 'Pago quincena',
-      idUsuario: idUsuario
-    });
-
-    // 4. Crear Gastos de prueba simulando actividad
-    const gastosSimulados = [
-      { monto: 850000, desc: 'Mercado mensual', cat: 'Comida', diasAtras: 5 },
-      { monto: 320000, desc: 'Gasolina e indrive', cat: 'Transporte', diasAtras: 4 },
-      { monto: 1100000, desc: 'Universidad', cat: 'Educación', diasAtras: 6 },
-      { monto: 450000, desc: 'Zapatos nuevos', cat: 'Ropa', diasAtras: 2 },
-      { monto: 200000, desc: 'Fin de semana', cat: 'Viajes', diasAtras: 8 },
-      { monto: 150000, desc: 'Cafés y snacks', cat: 'Gastos Hormiga', diasAtras: 1 },
-      { monto: 250000, desc: 'Cena con amigos', cat: 'Comida', diasAtras: 0 }
-    ];
-
-    for (const g of gastosSimulados) {
-      const d = new Date();
-      d.setDate(now.getDate() - g.diasAtras);
-      await this.createTransaccion({
-        monto: g.monto,
-        tipo: 'gasto',
-        categoria: g.cat,
-        fecha: d.toISOString().substring(0, 10),
-        descripcion: g.desc,
-        idUsuario: idUsuario
-      });
-    }
-
-    console.log('Datos de prueba generados para usuario:', idUsuario);
+    try { this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;'); } catch (e) { }
+    try { this.db.run('ALTER TABLE categorias ADD COLUMN idUsuario INTEGER DEFAULT NULL;'); } catch (e) { }
   }
 }

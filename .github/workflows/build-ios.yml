@@ -22,24 +22,19 @@ jobs:
       - name: Build web assets
         run: ionic build
 
-      - name: Remove old ios folder
-        run: rm -rf ios
-
-      - name: Add iOS platform
-        run: npx cap add ios
-
       - name: Capacitor sync
         run: npx cap sync ios
 
-      - name: Pod install
+      - name: Resolve SPM packages
         run: |
           cd ios/App
-          pod install
+          xcodebuild -project App.xcodeproj \
+            -resolvePackageDependencies
 
       - name: Build IPA
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace \
+          xcodebuild -project App.xcodeproj \
             -scheme App \
             -configuration Debug \
             -sdk iphoneos \

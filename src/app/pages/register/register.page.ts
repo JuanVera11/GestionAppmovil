@@ -21,6 +21,7 @@ export class RegisterPage {
   termsAccepted: boolean = false;
   loading = false;
   errorMsg = '';
+  successMsg = '';
 
   constructor(
     private authService: AuthService,
@@ -47,10 +48,11 @@ export class RegisterPage {
 
       const newId = await this.authService.register(nombre, apellido, this.email, this.pass);
 
-      if (newId) {
+      if (newId !== null && newId !== undefined) {
         await this.authService.loginByUserId(newId, nombre, apellido);
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
+        this.successMsg = 'Usuario creado con éxito';
       }
+
     } catch (error: any) {
       if (error.message?.includes('UNIQUE constraint failed')) {
         this.errorMsg = 'Este correo ya está registrado';

@@ -3,41 +3,57 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
+  background: #0f0f1a;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
 }
 
 .sidebar {
-  width: 64px;
-  min-width: 64px;
+  position: fixed;
+  top: env(safe-area-inset-top);
+  left: 0;
+  bottom: env(safe-area-inset-bottom);
+  width: 0;
+  min-width: 0;
   background: #0f0f1a;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px 0 16px;
+  align-items: flex-start;
+  padding: 0;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
 
   .expanded & {
-    width: 220px;
-    min-width: 220px;
-    align-items: flex-start;
+    width: 240px;
+    min-width: 240px;
+    padding: 20px 0 16px;
   }
 
   .sidebar-top {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 0 13px;
+    padding: 0 16px;
     margin-bottom: 28px;
     width: 100%;
-    overflow: hidden;
 
     .avatar {
-      width: 38px;
-      height: 38px;
-      min-width: 38px;
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
       border-radius: 50%;
       border: 2px solid #6366f1;
       object-fit: cover;
@@ -50,7 +66,7 @@
       .name {
         display: block;
         color: white;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -71,14 +87,13 @@
     gap: 4px;
     flex: 1;
     padding: 0 8px;
-    overflow: hidden;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px;
+    padding: 12px 14px;
     border-radius: 12px;
     color: #6b7280;
     text-decoration: none;
@@ -88,71 +103,27 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    overflow: hidden;
 
-    ion-icon {
-      font-size: 20px;
-      min-width: 20px;
-    }
+    ion-icon { font-size: 20px; min-width: 20px; }
+    .nav-label { font-size: 14px; font-weight: 500; }
 
-    .nav-label {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    &:hover {
-      background: rgba(99, 102, 241, 0.1);
-      color: white;
-    }
+    &:hover { background: rgba(99, 102, 241, 0.1); color: white; }
 
     &.active {
       background: rgba(99, 102, 241, 0.2);
       color: #a5b4fc;
-
-      ion-icon {
-        color: #6366f1;
-      }
+      ion-icon { color: #6366f1; }
     }
 
     &.logout {
       color: #f87171;
-
-      &:hover {
-        background: rgba(248, 113, 113, 0.1);
-      }
+      &:hover { background: rgba(248, 113, 113, 0.1); }
     }
   }
 
   .sidebar-bottom {
     width: 100%;
     padding: 0 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow: hidden;
-
-    .toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      padding: 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.04);
-      color: #6b7280;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      ion-icon {
-        font-size: 18px;
-      }
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
-      }
-    }
   }
 }
 
@@ -161,6 +132,7 @@
   overflow: hidden;
   position: relative;
   min-width: 0;
+  width: 100%;
 
   ion-router-outlet {
     position: absolute;
@@ -168,34 +140,24 @@
   }
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 64px !important;
-    min-width: 64px !important;
-    align-items: center !important;
+.menu-fab {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
 
-    .user-info,
-    .nav-label {
-      display: none !important;
-    }
+  ion-icon { font-size: 22px; }
 
-    .expanded & {
-      width: 220px !important;
-      min-width: 220px !important;
-      align-items: flex-start !important;
-
-      .user-info,
-      .nav-label {
-        display: block !important;
-      }
-    }
-  }
-  .main-area {
-    width: 100vw;
-    margin-left: 64px;
-  }
+  &:hover { background: rgba(99, 102, 241, 0.35); }
 }

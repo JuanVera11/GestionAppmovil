@@ -6,7 +6,7 @@ import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { Database } from './services/database';
 import { addIcons } from 'ionicons';
-import { pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { pieChartOutline, menuOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -14,11 +14,15 @@ import { Page } from './models/page';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
+<<<<<<< HEAD
   imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet]
+=======
+  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet],
+>>>>>>> 7977474f4e1ddfb5754f2c26fd6646f8166e000b
 })
 export class AppComponent implements OnInit {
 
-  sidebarExpanded = true;
+  sidebarExpanded = false;
 
   public appPages = [
     new Page('Dashboard', '/dashboard', 'grid-outline'),
@@ -39,20 +43,20 @@ export class AppComponent implements OnInit {
     private router: Router,
     private alertController: AlertController
   ) {
-    addIcons({ pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline });
+    addIcons({ pieChartOutline, menuOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline });
   }
 
   async ngOnInit() {
     await this.platform.ready();
     await this.database.initializeDatabase();
     await this.loadUserData();
-    await this.checkLoginStatus();
 
-    this.router.events.subscribe(async () => {
-      await this.loadUserData();
-      this.checkLoginStatus();
+    this.authService.isLoggedIn$.subscribe(async (logged) => {
+      this.isLoggedIn = logged;
+      if (logged) await this.loadUserData();
     });
   }
+
 
   toggleSidebar() {
     this.sidebarExpanded = !this.sidebarExpanded;

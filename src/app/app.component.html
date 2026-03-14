@@ -1,12 +1,13 @@
 <ion-app>
-
   <ng-container *ngIf="isLoggedIn; else sinMenu">
     <div class="app-layout" [class.expanded]="sidebarExpanded">
+
+      <div class="sidebar-overlay" *ngIf="sidebarExpanded" (click)="toggleSidebar()"></div>
 
       <div class="sidebar">
         <div class="sidebar-top">
           <img [src]="userPhoto" alt="User" class="avatar" />
-          <div class="user-info" *ngIf="sidebarExpanded">
+          <div class="user-info">
             <span class="name">{{ userName }}</span>
             <span class="sub">App de Finanzas</span>
           </div>
@@ -16,22 +17,22 @@
           <a *ngFor="let p of appPages" [routerLink]="p.url" routerLinkActive="active" class="nav-item"
             (click)="onNavClick()">
             <ion-icon [name]="p.icon"></ion-icon>
-            <span class="nav-label" *ngIf="sidebarExpanded">{{ p.title }}</span>
+            <span class="nav-label">{{ p.title }}</span>
           </a>
         </nav>
 
         <div class="sidebar-bottom">
           <button class="nav-item logout" (click)="onLogout(); onNavClick()">
             <ion-icon name="log-out-outline"></ion-icon>
-            <span class="nav-label" *ngIf="sidebarExpanded">Cerrar Sesión</span>
-          </button>
-          <button class="toggle-btn" (click)="toggleSidebar()">
-            <ion-icon [name]="sidebarExpanded ? 'chevron-back-outline' : 'chevron-forward-outline'"></ion-icon>
+            <span class="nav-label">Cerrar Sesión</span>
           </button>
         </div>
       </div>
 
       <div class="main-area">
+        <button class="menu-fab" (click)="toggleSidebar()">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
         <ion-router-outlet></ion-router-outlet>
       </div>
 
@@ -41,5 +42,9 @@
   <ng-template #sinMenu>
     <ion-router-outlet></ion-router-outlet>
   </ng-template>
+<<<<<<< HEAD
 
 </ion-app>
+=======
+</ion-app>
+>>>>>>> 7977474f4e1ddfb5754f2c26fd6646f8166e000b
