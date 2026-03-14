@@ -6,7 +6,7 @@ import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
 import { Database } from './services/database';
 import { addIcons } from 'ionicons';
-import { pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { pieChartOutline, menuOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Page } from './models/page';
 
 @Component({
@@ -14,11 +14,11 @@ import { Page } from './models/page';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet,],
+  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet],
 })
 export class AppComponent implements OnInit {
 
-  sidebarExpanded = true;
+  sidebarExpanded = false;
 
   public appPages = [
     new Page('Dashboard', '/dashboard', 'grid-outline'),
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private alertController: AlertController
   ) {
-    addIcons({ pieChartOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline });
+    addIcons({ pieChartOutline, menuOutline, cogOutline, newspaperOutline, gridOutline, swapVerticalOutline, pricetagsOutline, logOutOutline, chevronBackOutline, chevronForwardOutline });
   }
 
   async ngOnInit() {
@@ -76,10 +76,10 @@ export class AppComponent implements OnInit {
   }
 
   onNavClick() {
-  if (window.innerWidth <= 768) {
-    this.sidebarExpanded = false;
+    if (window.innerWidth <= 768) {
+      this.sidebarExpanded = false;
+    }
   }
-}
 
   async onLogout() {
     const alert = await this.alertController.create({

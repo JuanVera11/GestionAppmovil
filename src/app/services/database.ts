@@ -45,6 +45,7 @@ export class Database {
         locateFile: () => 'assets/sql-wasm.wasm'
       });
 
+
       const saved = localStorage.getItem(this.dbKey);
       if (saved) {
         const binary = atob(saved);
