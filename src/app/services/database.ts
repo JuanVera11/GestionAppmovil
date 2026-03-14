@@ -40,8 +40,7 @@ export class Database {
   async initializeDatabase(): Promise<void> {
     if (this.ready$.value) return;
     try {
-      const mod = await import('sql.js');
-      const initSqlJs = (mod as any).default ?? (mod as any);
+      const initSqlJs = (window as any).initSqlJs;
       this.SQL = await initSqlJs({
         locateFile: () => 'assets/sql-wasm.wasm'
       });
@@ -140,7 +139,7 @@ export class Database {
         [cat, newId]
       );
     }
-    
+
     return newId;
   }
 
@@ -167,19 +166,19 @@ export class Database {
   }
 
   async getCategorias(idUsuario: number): Promise<CategoriaRecord[]> {
-  return this.query(
-    'SELECT * FROM categorias WHERE idUsuario = ? ORDER BY nombre ASC;',
-    [idUsuario]
-  );
-}
+    return this.query(
+      'SELECT * FROM categorias WHERE idUsuario = ? ORDER BY nombre ASC;',
+      [idUsuario]
+    );
+  }
 
-async updateCategoria(input: CategoriaRecord): Promise<boolean> {
-  this.run(
-    'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ? AND idUsuario = ?;',
-    [input.valorAsignado, input.valorGasto, input.id, input.idUsuario]
-  );
-  return true;
-}
+  async updateCategoria(input: CategoriaRecord): Promise<boolean> {
+    this.run(
+      'UPDATE categorias SET valorAsignado = ?, valorGasto = ? WHERE id = ? AND idUsuario = ?;',
+      [input.valorAsignado, input.valorGasto, input.id, input.idUsuario]
+    );
+    return true;
+  }
 
 
   async createTransaccion(input: TransaccionRecord): Promise<number> {
@@ -195,29 +194,29 @@ async updateCategoria(input: CategoriaRecord): Promise<boolean> {
   }
 
   async getPresupuestos(idUsuario: number): Promise<any[]> {
-  return this.query(
-    'SELECT * FROM presupuestos WHERE idUsuarioFk = ? ORDER BY ano DESC, mes DESC;',
-    [idUsuario]
-  );
-}
+    return this.query(
+      'SELECT * FROM presupuestos WHERE idUsuarioFk = ? ORDER BY ano DESC, mes DESC;',
+      [idUsuario]
+    );
+  }
 
-async createPresupuesto(monto: number, mes: string, ano: number, idUsuario: number): Promise<number> {
-  return this.run(
-    'INSERT INTO presupuestos (monto, ingreso, gasto, mes, ano, estado, idUsuarioFk) VALUES (?, 0, 0, ?, ?, "activo", ?);',
-    [monto, mes, ano, idUsuario]
-  );
-}
+  async createPresupuesto(monto: number, mes: string, ano: number, idUsuario: number): Promise<number> {
+    return this.run(
+      'INSERT INTO presupuestos (monto, ingreso, gasto, mes, ano, estado, idUsuarioFk) VALUES (?, 0, 0, ?, ?, "activo", ?);',
+      [monto, mes, ano, idUsuario]
+    );
+  }
 
-async deletePresupuesto(id: number, idUsuario: number): Promise<void> {
-  this.run('DELETE FROM presupuestos WHERE id = ? AND idUsuarioFk = ?;', [id, idUsuario]);
-}
+  async deletePresupuesto(id: number, idUsuario: number): Promise<void> {
+    this.run('DELETE FROM presupuestos WHERE id = ? AND idUsuarioFk = ?;', [id, idUsuario]);
+  }
 
-async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: number): Promise<void> {
-  this.run(
-    'UPDATE categorias SET valorAsignado = ? WHERE id = ? AND idUsuario = ?;',
-    [valorAsignado, id, idUsuario]
-  );
-}
+  async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: number): Promise<void> {
+    this.run(
+      'UPDATE categorias SET valorAsignado = ? WHERE id = ? AND idUsuario = ?;',
+      [valorAsignado, id, idUsuario]
+    );
+  }
 
 
   private async createSchema(): Promise<void> {
@@ -265,11 +264,11 @@ async updateCategoriaAsignado(id: number, valorAsignado: number, idUsuario: numb
       this.db.run('ALTER TABLE usuarios ADD COLUMN foto TEXT DEFAULT NULL;');
     } catch (e) { }
     try {
-  this.db.run('ALTER TABLE categorias ADD COLUMN idUsuario INTEGER DEFAULT NULL;');
-} catch (e) {}
+      this.db.run('ALTER TABLE categorias ADD COLUMN idUsuario INTEGER DEFAULT NULL;');
+    } catch (e) { }
 
   }
-  
+
 
   private async seedBaseData(): Promise<void> {
 
