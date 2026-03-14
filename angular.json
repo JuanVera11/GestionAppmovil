@@ -44,7 +44,9 @@
               "src/global.scss",
               "src/theme/variables.scss"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/sql.js/dist/sql-wasm.js"
+            ],
             "browser": "src/main.ts",
             "externalDependencies": [
               "fs",
@@ -126,7 +128,9 @@
               "src/global.scss",
               "src/theme/variables.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/sql.js/dist/sql-wasm.js"
+            ]
           },
           "configurations": {
             "ci": {

@@ -40,8 +40,11 @@ export class Database {
   async initializeDatabase(): Promise<void> {
     if (this.ready$.value) return;
     try {
-      const mod = await import('sql.js');
-      const initSqlJs = (mod as any).default ?? (mod as any);
+      // @ts-ignore
+      const initSqlJs = window.initSqlJs;
+      if (!initSqlJs) {
+        throw new Error('initSqlJs no está disponible globalmente. Falta sql-wasm.js en scripts.');
+      }
       this.SQL = await initSqlJs({
         locateFile: () => 'assets/sql-wasm.wasm'
       });

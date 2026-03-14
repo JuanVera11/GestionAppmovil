@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLinkActive, RouterModule } from '@angular/router';
 import { IonApp, IonIcon, IonRouterOutlet, Platform, AlertController } from '@ionic/angular/standalone';
 import { NgIf, NgFor } from '@angular/common';
@@ -14,7 +14,7 @@ import { Page } from './models/page';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet,],
+  imports: [RouterModule, RouterLinkActive, NgIf, NgFor, IonApp, IonIcon, IonRouterOutlet]
 })
 export class AppComponent implements OnInit {
 
@@ -23,10 +23,9 @@ export class AppComponent implements OnInit {
   public appPages = [
     new Page('Dashboard', '/dashboard', 'grid-outline'),
     new Page('Categorías', '/categoria', 'pricetags-outline'),
-    new Page('Transacciones', '/transaccion', 'swap-vertical-outline'),
+    new Page('Configuraciones', '/configuracion', 'cog-outline'),
     new Page('Presupuesto', '/presupuesto', 'pie-chart-outline'),
     new Page('Reportes', '/reporte', 'newspaper-outline'),
-    new Page('Configuración', '/configuracion', 'cog-outline'),
   ];
 
   public isLoggedIn = false;
@@ -76,10 +75,10 @@ export class AppComponent implements OnInit {
   }
 
   onNavClick() {
-  if (window.innerWidth <= 768) {
-    this.sidebarExpanded = false;
+    if (window.innerWidth <= 768) {
+      this.sidebarExpanded = false;
+    }
   }
-}
 
   async onLogout() {
     const alert = await this.alertController.create({
@@ -103,4 +102,3 @@ export class AppComponent implements OnInit {
     await alert.present();
   }
 }
-

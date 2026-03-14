@@ -1,11 +1,8 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { defineCustomElements as jeepSqlite } from 'jeep-sqlite/loader';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-
-jeepSqlite(window);
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -13,4 +10,4 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes),
   ],
-}).catch(console.error);
+}).catch(err => console.error(err));
