@@ -182,6 +182,11 @@ export class Database {
     );
   }
 
+  async getTransaccion(idUsuario: number): Promise<TransaccionRecord[]> {
+  return this.query('SELECT * FROM transacciones WHERE idUsuario = ? ORDER BY fecha DESC;', [idUsuario]);
+}
+
+
   async deleteTransaccion(id: number): Promise<boolean> {
     this.run('DELETE FROM transacciones WHERE id = ?;', [id]);
     return true;

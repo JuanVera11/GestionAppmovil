@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, viewChild } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Database } from 'src/app/services/database';
@@ -7,6 +7,7 @@ import Chart from 'chart.js/auto';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
+import { Transaccion } from 'src/app/models/transaccion';
 
 @Component({
   selector: 'app-reporte',
@@ -18,15 +19,19 @@ import { arrowBackOutline } from 'ionicons/icons';
 export class ReportePage implements OnInit {
   @ViewChild('barChart') barChart!: ElementRef;
   @ViewChild('doughnutChart') doughnutChart!: ElementRef;
+  @ViewChild('dataTransform') dataTransform!: ElementRef;
 
   private bars: any;
   private doughnut: any;
+  private datatransF: any;
   userId = 0;
 
   resumen = {
     totalAsignado: 0,
     totalGastado: 0,
-    ahorroEstimado: 0
+    ahorroEstimado: 0,
+    gastoTotal: 0,
+    ingresoTotal: 0
   };
 
   constructor(
@@ -44,28 +49,40 @@ export class ReportePage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    await this.db.waitForReady();
+    const user = await this.auth.getCurrentUser();
+    if (user?.id) this.userId = user.id;
     await this.generarReportes();
   }
 
   async generarReportes() {
     const categorias = await this.db.getCategorias(this.userId);
     const presupuestos = await this.db.getPresupuestos(this.userId);
+    const transacciones = await this.db.getTransaccion(this.userId);
 
     // 1. Cálculos de Resumen
     const sumaCategorias = categorias.reduce((s, c) => s + c.valorAsignado, 0);
     const sumaGastoCat = categorias.reduce((s, c) => s + c.valorGasto, 0);
     const sumaPresupuestoGral = presupuestos.reduce((s, p) => s + p.monto, 0);
+    const sumaGastoT = transacciones.filter(t => t.tipo === 'gasto').reduce((s, t) => s + t.monto, 0);
+    const sumaIngresoT = transacciones.filter(t => t.tipo === 'ingreso')
+      .reduce((s, t) => s + t.monto, 0);
 
     this.resumen.totalAsignado = sumaCategorias + sumaPresupuestoGral;
     this.resumen.totalGastado = sumaGastoCat;
     this.resumen.ahorroEstimado = this.resumen.totalAsignado - this.resumen.totalGastado;
+    this.resumen.gastoTotal = sumaGastoT;
+    this.resumen.ingresoTotal = sumaIngresoT;
 
     // 2. Gráfico de Barras (Presupuesto vs Gasto por Categoría)
     this.initBarChart(categorias);
 
     // 3. Gráfico de Dona (Distribución del Gasto)
     this.initDoughnutChart(categorias);
+
+    this.initDataTransform(transacciones);
   }
+
 
   initBarChart(cats: any[]) {
     if (this.bars) this.bars.destroy();
@@ -105,6 +122,44 @@ export class ReportePage implements OnInit {
       options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
     });
   }
+
+  initDataTransform(transacciones: any[]) {
+    if (this.datatransF) this.datatransF.destroy();
+
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const agrupadoPorMes: { [mes: string]: { ingresos: number; gastos: number } } = {};
+
+    transacciones.forEach(t => {
+      const fecha = new Date(t.fecha);
+      const clave = `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+      if (!agrupadoPorMes[clave]) agrupadoPorMes[clave] = { ingresos: 0, gastos: 0 };
+      if (t.tipo === 'ingreso') agrupadoPorMes[clave].ingresos += t.monto;
+      else agrupadoPorMes[clave].gastos += t.monto;
+    });
+
+    const labels = Object.keys(agrupadoPorMes);
+    const dataIngresos = labels.map(m => agrupadoPorMes[m].ingresos);
+    const dataGastos = labels.map(m => agrupadoPorMes[m].gastos);
+
+    this.datatransF = new Chart(this.dataTransform.nativeElement, {
+
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Ingresos', data: dataIngresos, borderColor: '#4f46e5', backgroundColor: '#4f46e520', tension: 0.4, fill: true },
+          { label: 'Gastos', data: dataGastos, borderColor: '#fca5a5', backgroundColor: '#fca5a520', tension: 0.4, fill: true }
+        ]
+
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } }
+      }
+    });
+  }
+
+
 
   formatMoney(v: number) {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
